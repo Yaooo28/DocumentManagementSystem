@@ -1,0 +1,80 @@
+﻿@model UserUpdateModel
+@{
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Main content and form on the left -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@Model.FirstName @Model.LastName Profile Page</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="Detail" asp-controller="Account" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label" for="basic-default-fullname">Username</label>
+                            <input type="hidden" asp-for="@Model.Id" />
+                            <input type="text" class="form-control" asp-for="@Model.Username" placeholder="Your Username" />
+                            <span class="text-danger" asp-validation-for="@Model.Username"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="basic-default-fullname">Password</label>
+                            <input type="text" class="form-control" asp-for="@Model.Password" placeholder="Your Password" />
+                            <span class="text-danger" asp-validation-for="@Model.Password"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="basic-default-fullname">First Name</label>
+                            <input type="text" class="form-control" asp-for="@Model.FirstName" placeholder="First Name" />
+                            <span class="text-danger" asp-validation-for="@Model.FirstName"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="basic-default-fullname">Last Name</label>
+                            <input type="text" class="form-control" asp-for="@Model.LastName" placeholder="Last Name" />
+                            <span class="text-danger" asp-validation-for="@Model.LastName"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="basic-default-fullname">Your Email</label>
+                            <input type="email" class="form-control" asp-for="@Model.Email" placeholder="your@email.com" />
+                            <span class="text-danger" asp-validation-for="@Model.Email"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="basic-default-fullname">Your Phone</label>
+                            <input type="text" class="form-control" asp-for="@Model.PhoneNumber" placeholder="+9053000000" />
+                            <span class="text-danger" asp-validation-for="@Model.PhoneNumber"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="basic-default-fullname">Your Department</label>
+                            <select class="form-select" asp-items="@Model.Departments" asp-for="@Model.DeparmentId">
+                                <option value="0">Please select your department</option>
+                                <span class="text-danger" asp-validation-for="@Model.Departments"></span>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileImage">Profile Image</label>
+                            <input type="file" class="form-control" name="profileImage" />
+                        </div>
+                        <div class="text-danger" asp-validation-summary="All"></div>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 d-flex justify-content-center align-items-center" style="height: 300px;">
+            @if (!string.IsNullOrEmpty(Model.ImagePath))
+            {
+                <img src="@Url.Content("~/" + Model.ImagePath)" alt="Profile Image" class="img-fluid" style="max-width: 250px; max-height: 250px;" />
+            }
+            else
+            {
+                <img src="@Url.Content("~/Content/images/default-profile.png")" alt="Default Profile Image" class="img-fluid" style="max-width: 250px; max-height: 250px;" />
+            }
+        </div>
+
+
+
+
+    </div>
+</div>

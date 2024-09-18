@@ -1,0 +1,168 @@
+﻿@model List<DocumentListDto>
+@{
+    Layout = "_Layout";
+}
+
+<!-- Announcements Section -->
+@if (User.Identity.IsAuthenticated)
+
+
+
+{
+
+
+
+    if (ViewData["Announcements"] != null)
+
+
+
+    {
+
+
+
+        var announcements = ViewData["Announcements"] as List<DocumentManagementSystem.Entities.Announcement>;
+
+
+
+        if (announcements.Any())
+
+
+
+        {
+            <div class="container mt-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header" style="background-color: forestgreen">
+                        <h4 class="mb-0" style="color: white;">Announcements</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        @foreach (var announcement in announcements)
+
+
+
+                        {
+                            <div class="mb-4">
+                                <h5 class="text-dark font-weight-bold mb-2">@announcement.Title</h5>
+                                <p class="mb-2">@announcement.Content</p>
+                                <small class="text-secondary">Posted on @announcement.DateCreated.ToString("MMMM dd, yyyy")</small>
+                            </div>
+                            @if (announcement != announcements.Last())
+
+
+
+                            {
+                                <hr class="my-4" />
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+
+
+    }
+
+
+
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">List of /</span> Documents</h4>
+
+    <!-- Add New Document Button -->
+    @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+
+
+
+    {
+        <a class="btn btn-primary mb-4 m-lg-3" asp-action="Create">Add New Document</a>
+    }
+
+    <!-- Search Bar and Dropdowns -->
+    <form class="form-inline my-2 my-lg-0 row g-3" asp-action="Index" asp-controller="Home" method="get">
+        <div class="col-md-4">
+            <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="search">
+        </div>
+        <div class="col-md-4">
+            <select class="form-select" name="searchopt">
+                <option value="0" selected>Title of Doc</option>
+                <option value="1">Sender</option>
+                <option value="2">Receiver</option>
+                <option value="3">Type of Doc</option>
+                <option value="4">Class of Doc</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" name="sortOption" placeholder="Sorting by...">
+                <option selected>Sort By</option>
+                <option value="title">Title</option>
+                <option value="type">Document Type</option>
+                <option value="status">Status</option>
+                <option value="state">State</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+        </div>
+    </form>
+
+    <!-- Document List Table -->
+    <div class="card mt-4">
+        <div class="table-responsive text-nowrap">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Class</th>
+                        <th>State</th>
+                        <th>Sender</th>
+                        <th>Receiver</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><strong>@item.Title</strong></td>
+                            <td>@item.TypeOfDoc</td>
+                            <td>@item.ClassOfDoc</td>
+                            <td>@item.DocState</td>
+                            <td>@item.SenderName</td>
+                            <td>@item.ReceiverName</td>
+                            <td><span class="badge bg-label-primary me-1">@item.DocStatus</span></td>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                        <i class="bx bx-dots-vertical-rounded"></i>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" asp-controller="Home" asp-action="Detail" asp-route-id="@item.Id"><i class="bx bx-file me-1"></i> View Details</a>
+                                        @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+
+
+
+                                        {
+                                            <a class="dropdown-item" asp-controller="Home" asp-action="Edit" asp-route-id="@item.Id"><i class="bx bx-edit-alt me-1"></i> Edit</a>
+                                            @if (User.IsInRole("Admin"))
+
+
+
+                                            {
+                                                <a class="dropdown-item" asp-controller="Home" asp-action="Delete" asp-route-id="@item.Id"><i class="bx bx-trash me-1"></i> Delete</a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<hr class="my-5" />
