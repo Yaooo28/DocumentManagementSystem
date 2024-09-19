@@ -16,8 +16,8 @@
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/Yaooo28/DocumentManagementSystem.git`
-2. Navigate to the project directory: `cd document-management-system`
+1. Clone the repository or download file: `git clone https://github.com/Yaooo28/DocumentManagementSystem.git`
+2. Navigate to the project directory: `cd DocumentManagementSystem`
 3. Restore the dependencies: `dotnet restore`
 4. Set up the database:
    1. Open the database template file located in the `db` folder.
@@ -34,13 +34,8 @@
    - Moderator:
      - username: `secretary`
      - password: `123`
+   -Member:
+      -username: `example`
+      -password: `123`
 2. Add users and documents.
 3. Track the status of documents as they are sent and delivered between users.
-
-## Contributing
-
-I welcome contributions to this project. If you have an idea for a new feature or have found a bug, please open an issue or submit a pull request.
-
-## License
-
-This project is licensed under the MIT License. 
