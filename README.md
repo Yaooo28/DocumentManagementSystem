@@ -34,8 +34,8 @@
    - Moderator:
      - username: `secretary`
      - password: `123`
-   -Member:
-      -username: `example`
-      -password: `123`
+   - Member:
+     - username: `example`
+     - password: `123`
 2. Add users and documents.
 3. Track the status of documents as they are sent and delivered between users.
