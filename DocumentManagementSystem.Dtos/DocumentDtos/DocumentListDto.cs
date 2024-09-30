@@ -22,7 +22,8 @@ namespace DocumentManagementSystem.Dtos
         public string ShelfNumber { get; set; }
         public bool isBorrowed { get; set; }
         public string BorrowerName { get; set; }
-
+        public int DepId { get; set; }
+        public string DepartmentDefinition { get; set; }
 
     }
 

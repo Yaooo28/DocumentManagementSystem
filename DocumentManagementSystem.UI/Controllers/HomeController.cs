@@ -47,11 +47,22 @@ namespace DocumentManagementSystem.UI.Controllers
             // Load announcements
             var announcements = await _announcementService.GetAllAsync();
             ViewData["Announcements"] = announcements;
+            var docsQuery = from doc in _context.Documents
+                            join dep in _context.Departments on doc.DepId equals dep.Id
+                            select new
+                            {
+                                doc.Id,
+                                doc.Title,
+                                doc.TypeOfDoc,
+                                doc.SenderName,
+                                doc.ReceiverName,
+                                doc.ClassOfDoc,
+                                doc.DocStatus,
+                                doc.DocState,
+                                doc.SendDate,
+                                DepartmentDefinition = dep.Definition
+                            };
 
-            // Initialize query
-            IQueryable<Document> docsQuery = _context.Documents;
-
-            // Apply search filters
             if (!String.IsNullOrEmpty(search))
             {
                 int selectedOpt = int.Parse(searchopt ?? "0");
@@ -76,7 +87,6 @@ namespace DocumentManagementSystem.UI.Controllers
                 }
             }
 
-            // Apply sorting
             switch (sortOption)
             {
                 case "title":
@@ -95,13 +105,24 @@ namespace DocumentManagementSystem.UI.Controllers
                     docsQuery = docsQuery.OrderByDescending(x => x.SendDate);
                     break;
                 default:
-                    docsQuery = docsQuery.OrderBy(x => x.Id); // Default sorting
+                    docsQuery = docsQuery.OrderBy(x => x.Id);
                     break;
             }
 
-            // Execute query and map to DTOs
             var docs = await docsQuery.ToListAsync();
-            var dtos = _mapper.Map<List<DocumentListDto>>(docs);
+            var dtos = docs.Select(x => new DocumentListDto
+            {
+                Id = x.Id,
+                Title = x.Title,
+                TypeOfDoc = x.TypeOfDoc,
+                SenderName = x.SenderName,
+                ClassOfDoc = x.ClassOfDoc,
+                ReceiverName = x.ReceiverName,
+                DocStatus = x.DocStatus,
+                DocState = x.DocState,
+                SendDate = x.SendDate,
+                DepartmentDefinition = x.DepartmentDefinition
+            }).ToList();
 
             return View("Index", dtos);
         }
@@ -152,16 +173,6 @@ namespace DocumentManagementSystem.UI.Controllers
             return View(model);
         }
 
-
-
-
-
-
-
-
-
-
-
         [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> Edit(int id)
         {
@@ -191,6 +202,7 @@ namespace DocumentManagementSystem.UI.Controllers
         {
             // Fetch the document details from the service
             var documentResponse = await _documentService.GetByIdAsync<DocumentUpdateDto>(id);
+                
 
             // Check if the document is found
             if (documentResponse == null || documentResponse.ResponseType == ResponseType.NotFound)
@@ -210,6 +222,8 @@ namespace DocumentManagementSystem.UI.Controllers
             // Return the document details view with the department definition included
             return this.ResponseView(documentResponse);  // Using your existing ResponseView extension method
         }
+        
+
 
     }
 }
