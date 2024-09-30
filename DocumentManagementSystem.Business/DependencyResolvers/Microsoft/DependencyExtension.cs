@@ -1,20 +1,14 @@
-﻿using AutoMapper;
-using DocumentManagementSystem.Business.Interfaces;
-using DocumentManagementSystem.Business.Mappings.AutoMapper;
+﻿using DocumentManagementSystem.Business.Interfaces;
 using DocumentManagementSystem.Business.Services;
 using DocumentManagementSystem.Business.ValidationRules;
 using DocumentManagementSystem.DataAccess.Contexts;
 using DocumentManagementSystem.DataAccess.UnitOfWork;
 using DocumentManagementSystem.Dtos;
+using DocumentManagementSystem.Dtos.DocumentDtos;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Business.DependencyResolvers.Microsoft
 {

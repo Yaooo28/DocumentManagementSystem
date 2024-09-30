@@ -1,10 +1,6 @@
 ﻿using DocumentManagementSystem.Dtos.Interfaces;
 using DocumentManagementSystem.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Dtos
 {
@@ -21,13 +17,14 @@ namespace DocumentManagementSystem.Dtos
         public DocStatus DocStatus { get; set; }
         public int? ReplyDocId { get; set; }
         public DateTime SendDate { get; set; }
-        public DateTime CreatedDate { get; set; } 
+        public DateTime CreatedDate { get; set; }
         public DateTime? ReceiveDate { get; set; }
         public string RoomNumber { get; set; }
-        public string ShelfNumber { get; set; } 
-        public bool isBorrowed { get; set; } 
+        public string ShelfNumber { get; set; }
+        public bool isBorrowed { get; set; }
         public string BorrowerName { get; set; }
         public int AppUserId { get; set; }
-        public string Department { get; set; }
+        public int DepId { get; set; }
+        public string DepartmentDefinition { get; set; }
     }
 }

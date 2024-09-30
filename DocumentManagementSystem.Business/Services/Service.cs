@@ -8,9 +8,7 @@ using DocumentManagementSystem.Entities;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Business.Services
@@ -99,7 +97,7 @@ namespace DocumentManagementSystem.Business.Services
                 await _uow.SaveChangesAsync();
                 return new Response<UpdateDto>(ResponseType.Success, dto);
             }
-            return new Response<UpdateDto>(dto,result.ConvertToCustomValidationError());
+            return new Response<UpdateDto>(dto, result.ConvertToCustomValidationError());
         }
     }
 }

@@ -1,25 +1,23 @@
 ﻿using AutoMapper;
 using DocumentManagementSystem.Business.Interfaces;
 using DocumentManagementSystem.Common.Enums;
+using DocumentManagementSystem.DataAccess.Contexts;
 using DocumentManagementSystem.Dtos;
 using DocumentManagementSystem.UI.Extensions;
 using DocumentManagementSystem.UI.Models;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using DocumentManagementSystem.DataAccess.Contexts;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using DocumentManagementSystem.Business.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using System.IO;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.UI.Controllers
 {

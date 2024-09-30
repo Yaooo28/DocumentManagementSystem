@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DocumentManagementSystem.Business.Interfaces;
+using DocumentManagementSystem.Entities; // Make sure to include the correct namespace for the Announcement entity
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using DocumentManagementSystem.Business.Interfaces;
-using DocumentManagementSystem.Entities; // Make sure to include the correct namespace for the Announcement entity
 
 namespace DocumentManagementSystem.UI.Controllers // Updated to the correct namespace for controllers
 {

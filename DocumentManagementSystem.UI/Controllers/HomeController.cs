@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using DocumentManagementSystem.Business.Interfaces;
-using DocumentManagementSystem.Common.Enums;
+using DocumentManagementSystem.Common;
 using DocumentManagementSystem.DataAccess.Contexts;
 using DocumentManagementSystem.Dtos;
+using DocumentManagementSystem.Dtos.DocumentDtos;
 using DocumentManagementSystem.Entities;
 using DocumentManagementSystem.UI.Extensions;
 using FluentValidation;
@@ -48,7 +49,7 @@ namespace DocumentManagementSystem.UI.Controllers
             ViewData["Announcements"] = announcements;
 
             // Initialize query
-            IQueryable<Document> docsQuery = _context.Document;
+            IQueryable<Document> docsQuery = _context.Documents;
 
             // Apply search filters
             if (!String.IsNullOrEmpty(search))
@@ -121,10 +122,10 @@ namespace DocumentManagementSystem.UI.Controllers
         }
         public IActionResult Create()
         {
-            ViewBag.Departments = new SelectList(_context.Departments, "Id", "Definition");  // Ensure departments are fetched from DB
             var departments = _context.Departments.Select(d => new { d.Id, d.Definition }).ToList();
-            ViewBag.Department = new SelectList(departments, "Id", "Definition");
+            ViewBag.Departments = new SelectList(departments, "Id", "Definition");
             var model = new DocumentCreateDto();
+
             return View("Create", model);
         }
 
@@ -164,7 +165,13 @@ namespace DocumentManagementSystem.UI.Controllers
         [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> Edit(int id)
         {
+            // Fetch the document to be edited
             var response = await _documentService.GetByIdAsync<DocumentUpdateDto>(id);
+
+            // Fetch departments and pass them to ViewBag for the select dropdown
+            var departments = _context.Departments.Select(d => new { d.Id, d.Definition }).ToList();
+            ViewBag.Departments = new SelectList(departments, "Id", "Definition");
+
             return this.ResponseView(response);
         }
 
@@ -182,8 +189,27 @@ namespace DocumentManagementSystem.UI.Controllers
 
         public async Task<IActionResult> Detail(int id)
         {
-            var response = await _documentService.GetByIdAsync<DocumentUpdateDto>(id);
-            return this.ResponseView(response);
+            // Fetch the document details from the service
+            var documentResponse = await _documentService.GetByIdAsync<DocumentUpdateDto>(id);
+
+            // Check if the document is found
+            if (documentResponse == null || documentResponse.ResponseType == ResponseType.NotFound)
+            {
+                return this.ResponseView(documentResponse);
+            }
+
+            // Fetch the department definition based on DepId from the document
+            var departmentDefinition = await _context.Departments
+                .Where(d => d.Id == documentResponse.Data.DepId)  // Access the DepId from the document response
+                .Select(d => d.Definition)
+                .FirstOrDefaultAsync();
+
+            // Append the department definition to the DocumentUpdateDto
+            documentResponse.Data.DepartmentDefinition = departmentDefinition;
+
+            // Return the document details view with the department definition included
+            return this.ResponseView(documentResponse);  // Using your existing ResponseView extension method
         }
+
     }
 }

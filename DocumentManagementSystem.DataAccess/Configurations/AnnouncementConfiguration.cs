@@ -1,6 +1,6 @@
+using DocumentManagementSystem.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using DocumentManagementSystem.Entities;
 
 public class AnnouncementConfiguration : IEntityTypeConfiguration<Announcement>
 {

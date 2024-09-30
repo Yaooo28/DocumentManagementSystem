@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using DocumentManagementSystem.Business.Interfaces;
-using DocumentManagementSystem.Business.Services;
 using DocumentManagementSystem.DataAccess.Contexts;
 using DocumentManagementSystem.Dtos;
 using DocumentManagementSystem.UI.Extensions;
@@ -8,8 +7,6 @@ using DocumentManagementSystem.UI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 

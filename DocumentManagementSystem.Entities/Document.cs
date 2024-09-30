@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Entities
 {
-    public class Document :BaseEntity
+    public class Document : BaseEntity
     {
         public string Title { get; set; }
         public string Description { get; set; }
@@ -16,7 +12,7 @@ namespace DocumentManagementSystem.Entities
         public string ReceiverName { get; set; }
         public DocState DocState { get; set; }
         public DocStatus DocStatus { get; set; } = DocStatus.Sent;
-        public int? ReplyDocId { get; set; }
+        public int ReplyDocId { get; set; }
         public DateTime SendDate { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public DateTime? ReceiveDate { get; set; }
@@ -26,8 +22,7 @@ namespace DocumentManagementSystem.Entities
         public string BorrowerName { get; set; } = string.Empty;
         public int AppUserId { get; set; }
         public AppUser AppUser { get; set; }
-
-
+        public int? DepId { get; set; }
     }
 
     public enum DocState

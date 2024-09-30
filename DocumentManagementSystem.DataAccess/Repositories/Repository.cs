@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.DataAccess.Repositories
@@ -63,7 +62,7 @@ namespace DocumentManagementSystem.DataAccess.Repositories
         }
         public async Task CreateAsync(T entity)
         {
-           await _context.Set<T>().AddAsync(entity);
+            await _context.Set<T>().AddAsync(entity);
         }
 
         public void Update(T entity, T unchanged)

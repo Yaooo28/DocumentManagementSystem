@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DocumentManagementSystem.Common
+﻿namespace DocumentManagementSystem.Common
 {
     public class Response : IResponse
     {
@@ -23,7 +17,7 @@ namespace DocumentManagementSystem.Common
 
         public ResponseType ResponseType { get; set; }
     }
-    
+
     public enum ResponseType
     {
         Success,

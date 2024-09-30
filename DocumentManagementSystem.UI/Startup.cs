@@ -1,6 +1,11 @@
 using AutoMapper;
 using DocumentManagementSystem.Business.DependencyResolvers.Microsoft;
 using DocumentManagementSystem.Business.Helpers;
+using DocumentManagementSystem.Business.Interfaces;
+using DocumentManagementSystem.Business.Services;
+using DocumentManagementSystem.Business.ValidationRules;
+using DocumentManagementSystem.DataAccess.Contexts;
+using DocumentManagementSystem.Dtos.DocumentDtos;
 using DocumentManagementSystem.UI.Mappings.AutoMapper;
 using DocumentManagementSystem.UI.Models;
 using DocumentManagementSystem.UI.ValidationRules;
@@ -14,11 +19,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
-using DocumentManagementSystem.Business.Interfaces;
-using DocumentManagementSystem.Business.Services;
-using DocumentManagementSystem.Business.ValidationRules;
-using DocumentManagementSystem.DataAccess.Contexts;
-using DocumentManagementSystem.Dtos;
 
 namespace DocumentManagementSystem.UI
 {

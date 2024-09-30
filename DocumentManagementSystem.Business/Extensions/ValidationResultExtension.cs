@@ -1,10 +1,6 @@
 ﻿using DocumentManagementSystem.Common;
 using FluentValidation.Results;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Business.Extensions
 {
@@ -17,8 +13,8 @@ namespace DocumentManagementSystem.Business.Extensions
             {
                 errors.Add(new()
                 {
-                    ErrorMessage= error.ErrorMessage,
-                    PropertyName= error.PropertyName,
+                    ErrorMessage = error.ErrorMessage,
+                    PropertyName = error.PropertyName,
                 });
             }
 

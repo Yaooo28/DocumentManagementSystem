@@ -3,19 +3,17 @@ using DocumentManagementSystem.Dtos.Interfaces;
 using DocumentManagementSystem.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Business.Interfaces
 {
-    public interface IService<CreateDto,UpdateDto,ListDto,T> 
-        where CreateDto : class,IDto,new()
-        where UpdateDto : class,IUpdateDto,new()
-        where ListDto : class,IDto,new()
+    public interface IService<CreateDto, UpdateDto, ListDto, T>
+        where CreateDto : class, IDto, new()
+        where UpdateDto : class, IUpdateDto, new()
+        where ListDto : class, IDto, new()
         where T : BaseEntity
-        {
+    {
 
         Task<IResponse<CreateDto>> CreateAsync(CreateDto dto);
         Task<IResponse<UpdateDto>> UpdateAsync(UpdateDto dto);

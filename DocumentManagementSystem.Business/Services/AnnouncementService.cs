@@ -1,10 +1,10 @@
 ﻿// File: DocumentManagementSystem.Business/Services/AnnouncementService.cs
+using DocumentManagementSystem.Business.Interfaces;
 using DocumentManagementSystem.DataAccess.Contexts;
+using DocumentManagementSystem.Entities;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using DocumentManagementSystem.Business.Interfaces;
-using DocumentManagementSystem.Entities;
 
 namespace DocumentManagementSystem.Business.Services
 {

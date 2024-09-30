@@ -3,10 +3,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DocumentManagementSystem.DataAccess.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class a : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Announcements",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Announcements", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AppRoles",
                 columns: table => new
@@ -45,7 +60,8 @@ namespace DocumentManagementSystem.DataAccess.Migrations
                     LastName = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    DeparmentId = table.Column<int>(type: "int", nullable: false)
+                    DeparmentId = table.Column<int>(type: "int", nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -98,7 +114,7 @@ namespace DocumentManagementSystem.DataAccess.Migrations
                     ReceiverName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DocState = table.Column<int>(type: "int", nullable: false),
                     DocStatus = table.Column<int>(type: "int", nullable: false),
-                    ReplyDocId = table.Column<int>(type: "int", nullable: true),
+                    ReplyDocId = table.Column<int>(type: "int", nullable: false),
                     SendDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ReceiveDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -106,7 +122,8 @@ namespace DocumentManagementSystem.DataAccess.Migrations
                     ShelfNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     isBorrowed = table.Column<bool>(type: "bit", nullable: false),
                     BorrowerName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AppUserId = table.Column<int>(type: "int", nullable: false)
+                    AppUserId = table.Column<int>(type: "int", nullable: false),
+                    DepId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -143,6 +160,9 @@ namespace DocumentManagementSystem.DataAccess.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Announcements");
+
             migrationBuilder.DropTable(
                 name: "AppUserRoles");
 

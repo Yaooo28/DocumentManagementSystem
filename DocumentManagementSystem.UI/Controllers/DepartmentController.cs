@@ -1,13 +1,8 @@
 ﻿using DocumentManagementSystem.Business.Interfaces;
-using DocumentManagementSystem.Business.Services;
 using DocumentManagementSystem.Dtos;
 using DocumentManagementSystem.UI.Extensions;
-using DocumentManagementSystem.UI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
 using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.UI.Controllers
@@ -36,7 +31,7 @@ namespace DocumentManagementSystem.UI.Controllers
         public async Task<IActionResult> Update(DepartmentUpdateDto dto)
         {
             var response = await _departmentService.UpdateAsync(dto);
-            return this.ResponseRedirectAction(response,"Index");
+            return this.ResponseRedirectAction(response, "Index");
         }
         public IActionResult Create()
         {
@@ -46,7 +41,7 @@ namespace DocumentManagementSystem.UI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(DepartmentCreateDto dto)
         {
-            if(dto.Definition == null)
+            if (dto.Definition == null)
             {
                 return View("Create");
             }

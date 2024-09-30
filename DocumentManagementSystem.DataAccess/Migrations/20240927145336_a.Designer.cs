@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DocumentManagementSystem.DataAccess.Migrations
 {
     [DbContext(typeof(DocumentContext))]
-    [Migration("20240913083634_AddAnnouncementEntity")]
-    partial class AddAnnouncementEntity
+    [Migration("20240927145336_a")]
+    partial class a
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace DocumentManagementSystem.DataAccess.Migrations
                 .HasAnnotation("ProductVersion", "5.0.17")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Announcement", b =>
+            modelBuilder.Entity("DocumentManagementSystem.Entities.Announcement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -29,18 +29,13 @@ namespace DocumentManagementSystem.DataAccess.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Content")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DateCreated")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -174,6 +169,9 @@ namespace DocumentManagementSystem.DataAccess.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("DepId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("ntext");
@@ -190,7 +188,7 @@ namespace DocumentManagementSystem.DataAccess.Migrations
                     b.Property<string>("ReceiverName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ReplyDocId")
+                    b.Property<int>("ReplyDocId")
                         .HasColumnType("int");
 
                     b.Property<string>("RoomNumber")

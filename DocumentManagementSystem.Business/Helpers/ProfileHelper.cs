@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
 using DocumentManagementSystem.Business.Mappings.AutoMapper;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DocumentManagementSystem.Business.Helpers
 {
