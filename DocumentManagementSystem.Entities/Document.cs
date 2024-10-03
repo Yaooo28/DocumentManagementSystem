@@ -23,6 +23,8 @@ namespace DocumentManagementSystem.Entities
         public int AppUserId { get; set; }
         public AppUser AppUser { get; set; }
         public int? DepId { get; set; }
+        public string FileName { get; set; }  // Add this field for file name
+        public string FilePath { get; set; }  // Add this field for file path
     }
 
     public enum DocState

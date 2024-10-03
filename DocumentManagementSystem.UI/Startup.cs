@@ -101,6 +101,8 @@ namespace DocumentManagementSystem.UI
             {
                 endpoints.MapDefaultControllerRoute();
             });
+
         }
+
     }
 }

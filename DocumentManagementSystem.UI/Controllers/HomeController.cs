@@ -8,14 +8,18 @@ using DocumentManagementSystem.Entities;
 using DocumentManagementSystem.UI.Extensions;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+
 
 namespace DocumentManagementSystem.UI.Controllers
 {
@@ -27,19 +31,26 @@ namespace DocumentManagementSystem.UI.Controllers
         private readonly IValidator<DocumentCreateDto> _documentCreateValidator;
         private readonly DocumentContext _context;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+ 
+
+
 
         public HomeController(
             IDocumentService documentService,
             IAnnouncementService announcementService,
             IValidator<DocumentCreateDto> documentCreateValidator,
             DocumentContext context,
-            IMapper mapper)
+            IMapper mapper,
+            IWebHostEnvironment webHostEnvironment)
+
         {
             _documentService = documentService;
             _announcementService = announcementService;
             _documentCreateValidator = documentCreateValidator;
             _context = context;
             _mapper = mapper;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<IActionResult> Index([FromQuery] string search, [FromQuery] string searchopt, [FromQuery] string sortOption)
@@ -151,35 +162,105 @@ namespace DocumentManagementSystem.UI.Controllers
         }
 
 
-
-        [Authorize(Roles = "Admin,Moderator")]
         [HttpPost]
-        public async Task<IActionResult> Create(DocumentCreateDto model)
+        [Authorize(Roles = "Admin,Moderator")]
+        public async Task<IActionResult> Create([FromForm] DocumentCreateDto model, IFormFile file)
         {
-
-
             var result = _documentCreateValidator.Validate(model);
             if (result.IsValid)
             {
+                if (file != null && file.Length > 0)
+                {
+                    try
+                    {
+                        string fileUploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "fileUpload");
+
+                        if (!Directory.Exists(fileUploadFolder))
+                        {
+                            Directory.CreateDirectory(fileUploadFolder);
+                            Console.WriteLine("Created directory: " + fileUploadFolder);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Directory already exists: " + fileUploadFolder);
+                        }
+
+                        string userProvidedFileName = model.Title;
+                        userProvidedFileName = Path.GetFileNameWithoutExtension(userProvidedFileName);
+
+                        string fileExtension = Path.GetExtension(file.FileName);
+                        string finalFileName = userProvidedFileName + fileExtension;
+                        string filePath = Path.Combine(fileUploadFolder, finalFileName);
+                        if (System.IO.File.Exists(filePath))
+                        {
+                            finalFileName = userProvidedFileName + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + fileExtension;
+                            filePath = Path.Combine(fileUploadFolder, finalFileName);
+                        }
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(fileStream);
+                            Console.WriteLine("File uploaded successfully to: " + filePath);
+                        }
+                        model.FileName = finalFileName;
+                        model.FilePath = Path.Combine("fileUpload", finalFileName).Replace("\\", "/");
+
+                        Console.WriteLine("FileName stored in database: " + model.FileName);
+                        Console.WriteLine("FilePath stored in database: " + model.FilePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Exception during file upload: " + ex.Message);
+                        ModelState.AddModelError("", "File upload failed: " + ex.Message);
+                        return View(model);
+                    }
+                }
+
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 model.AppUserId = int.Parse(userId);
                 var createResponse = await _documentService.CreateAsync(model);
+
                 return this.ResponseRedirectAction(createResponse, "Index");
             }
+
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
             }
+
             return View(model);
         }
+
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult DownloadFile(string fileName)
+        {
+            string fileUploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "fileUpload");
+            string filePath = Path.Combine(fileUploadFolder, fileName);
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+            var fileExtension = Path.GetExtension(filePath).ToLowerInvariant();
+            if (fileExtension == ".jpg" || fileExtension == ".jpeg" || fileExtension == ".png")
+            {
+                return BadRequest("Image files cannot be downloaded.");
+            }
+            var fileContentType = "application/octet-stream";
+            if (fileExtension == ".pdf") fileContentType = "application/pdf";
+            else if (fileExtension == ".txt") fileContentType = "text/plain";
+            else if (fileExtension == ".doc" || fileExtension == ".docx") fileContentType = "application/msword";
+
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            return File(fileBytes, fileContentType, fileName);
+        }
+
 
         [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> Edit(int id)
         {
-            // Fetch the document to be edited
             var response = await _documentService.GetByIdAsync<DocumentUpdateDto>(id);
-
-            // Fetch departments and pass them to ViewBag for the select dropdown
             var departments = _context.Departments.Select(d => new { d.Id, d.Definition }).ToList();
             ViewBag.Departments = new SelectList(departments, "Id", "Definition");
 
@@ -200,29 +281,22 @@ namespace DocumentManagementSystem.UI.Controllers
 
         public async Task<IActionResult> Detail(int id)
         {
-            // Fetch the document details from the service
             var documentResponse = await _documentService.GetByIdAsync<DocumentUpdateDto>(id);
-                
 
-            // Check if the document is found
             if (documentResponse == null || documentResponse.ResponseType == ResponseType.NotFound)
             {
                 return this.ResponseView(documentResponse);
             }
 
-            // Fetch the department definition based on DepId from the document
             var departmentDefinition = await _context.Departments
-                .Where(d => d.Id == documentResponse.Data.DepId)  // Access the DepId from the document response
+                .Where(d => d.Id == documentResponse.Data.DepId)  
                 .Select(d => d.Definition)
                 .FirstOrDefaultAsync();
 
-            // Append the department definition to the DocumentUpdateDto
             documentResponse.Data.DepartmentDefinition = departmentDefinition;
-
-            // Return the document details view with the department definition included
-            return this.ResponseView(documentResponse);  // Using your existing ResponseView extension method
+            return this.ResponseView(documentResponse); 
         }
-        
+
 
 
     }

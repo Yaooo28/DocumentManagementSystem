@@ -26,5 +26,7 @@ namespace DocumentManagementSystem.Dtos
         public int AppUserId { get; set; }
         public int DepId { get; set; }
         public string DepartmentDefinition { get; set; }
+        public string FileName { get; set; } // Current file name
+        public string FilePath { get; set; } // Path to the current file
     }
 }

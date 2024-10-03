@@ -180,6 +180,12 @@ namespace DocumentManagementSystem.DataAccess.Migrations
                     b.Property<int>("DocStatus")
                         .HasColumnType("int");
 
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("ReceiveDate")
                         .HasColumnType("datetime2");
 
