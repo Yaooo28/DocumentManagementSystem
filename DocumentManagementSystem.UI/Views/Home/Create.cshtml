@@ -17,11 +17,24 @@
                         <input type="text" class="form-control" asp-for="@Model.Title" placeholder="example: Example Transcript" />
                         <span class="text-danger" asp-validation-for="@Model.Title"></span>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label" for="basic-default-fullname">Class of Document</label>
-                        <input type="text" class="form-control" asp-for="@Model.TypeOfDoc" placeholder="example: Trascript" />
+                        <select class="form-control" asp-for="@Model.TypeOfDoc">
+                            <option value="">Select Document Type</option>
+                            <option value="reports">Reports</option>
+                            <option value="research reports">Research Reports</option>
+                            <option value="statistical publications">Statistical Publications</option>
+                            <option value="fact sheets">Fact Sheets</option>
+                            <option value="handbooks and manuals">Handbooks and Manuals</option>
+                            <option value="mayor’s papers">Mayor’s Papers</option>
+                            <option value="budgets">Budgets</option>
+                            <option value="transactional documents">Transactional Documents</option>
+                            <option value="financial reports">Financial Reports</option>
+                        </select>
                         <span class="text-danger" asp-validation-for="@Model.TypeOfDoc"></span>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label" for="basic-default-fullname">Type of Document</label>
                         <input type="text" class="form-control" asp-for="@Model.ClassOfDoc" placeholder="example: Report" />
@@ -43,30 +56,34 @@
                                   placeholder="Descripe document content"></textarea>
                         <span class="text-danger" asp-validation-for="@Model.Description"></span>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label" for="basic-default-fullname">Sender Name</label>
-                        <input type="text" class="form-control" asp-for="@Model.SenderName" placeholder="example: Name" />
+                        <select class="form-control" asp-for="@Model.SenderName">
+                            <option value="">Select Sender</option>
+                            <option value="sender 1">Sender 1</option>
+                            <option value="sender 2">Sender 2</option>
+                            <option value="sender 3">Sender 3</option>
+                        </select>
                         <span class="text-danger" asp-validation-for="@Model.SenderName"></span>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label" for="basic-default-fullname">Receiver Name</label>
-                        <input type="text" class="form-control" asp-for="@Model.ReceiverName" placeholder="example: Name" />
+                        <select class="form-control" asp-for="@Model.ReceiverName">
+                            <option value="">Select Receiver</option>
+                            <option value="receiver 1">Receiver 1</option>
+                            <option value="receiver 2">Receiver 2</option>
+                            <option value="receiver 3">Receiver 3</option>
+                        </select>
                         <span class="text-danger" asp-validation-for="@Model.ReceiverName"></span>
                     </div>
-
 
                     <div class="mb-3">
                         <label for="DepartmentId" class="form-label">Department</label>
                         <select class="form-control" asp-for="@Model.DepId" asp-items="ViewBag.Departments">
                             <option value="">Select a Department</option>
                         </select>
-                    </div>
-
-
-
-                    <div class="form-group">
-                        <label for="FileName">File Name</label>
-                        <input type="text" name="FileName" class="form-control" />
                     </div>
 
                     <div class="form-group">

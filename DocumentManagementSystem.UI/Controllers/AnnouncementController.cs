@@ -46,19 +46,36 @@ namespace DocumentManagementSystem.UI.Controllers // Updated to the correct name
         public async Task<IActionResult> Edit(int id)
         {
             var announcement = await _announcementService.GetByIdAsync(id);
-            if (announcement == null) return NotFound();
+            if (announcement == null)
+                return NotFound();
+
             return View(announcement);
         }
 
         // Action to handle the edit form submission
         [HttpPost]
-        public async Task<IActionResult> Edit(Announcement announcement)
+        public async Task<IActionResult> Edit(int id, Announcement announcement)
         {
+            if (id != announcement.Id)
+                return BadRequest(); // Ensure the ID matches the announcement being edited
+
             if (ModelState.IsValid)
             {
-                await _announcementService.UpdateAsync(announcement);
+                var existingAnnouncement = await _announcementService.GetByIdAsync(id);
+                if (existingAnnouncement == null)
+                    return NotFound();
+
+                // Update fields here if necessary, e.g., manually assign fields to prevent overposting.
+                existingAnnouncement.Title = announcement.Title;
+                existingAnnouncement.Content = announcement.Content;
+                existingAnnouncement.DateCreated = announcement.DateCreated;
+                // Add more fields as needed
+
+                await _announcementService.UpdateAsync(existingAnnouncement);
                 return RedirectToAction(nameof(Index));
             }
+
+            // If ModelState is not valid, return to the edit view with the current announcement data
             return View(announcement);
         }
 

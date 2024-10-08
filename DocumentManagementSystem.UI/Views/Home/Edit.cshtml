@@ -10,7 +10,7 @@
                 <h5 class="mb-0">Edit @Model.Title Document</h5>
             </div>
             <div class="card-body">
-                <form method="post" asp-action="Edit" asp-controller="Home">
+                <form method="post" enctype="multipart/form-data" asp-action="Edit" asp-controller="Home">
                     <div class="mb-3">
                         <label class="form-label" for="basic-default-fullname">Title of Document</label>
                         <input type="hidden" asp-for="@Model.Id" />
@@ -18,16 +18,19 @@
                         <input type="text" class="form-control" asp-for="@Model.Title" placeholder="example: Denizcan's Transcript" />
                         <span class="text-danger" asp-validation-for="@Model.Title"></span>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label" for="basic-default-fullname">Type of Document</label>
                         <input type="text" class="form-control" asp-for="@Model.TypeOfDoc" placeholder="example: Trascript" />
                         <span class="text-danger" asp-validation-for="@Model.TypeOfDoc"></span>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label" for="basic-default-fullname">Type of Document</label>
                         <input type="text" class="form-control" asp-for="@Model.ClassOfDoc" placeholder="example: Report" />
                         <span class="text-danger" asp-validation-for="@Model.ClassOfDoc"></span>
                     </div>
+
                     <div class="mb-3">
                         <label for="exampleFormControlSelect1" class="form-label">Document State</label>
                         <select class="form-select" asp-for="@Model.DocState" aria-label="Document State">
@@ -37,6 +40,7 @@
                         </select>
                         <span class="text-danger" asp-validation-for="@Model.DocState"></span>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label" for="basic-default-message">Description</label>
                         <textarea asp-for="@Model.Description"
@@ -44,16 +48,19 @@
                                   placeholder="Descripe document content"></textarea>
                         <span class="text-danger" asp-validation-for="@Model.Description"></span>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label" for="basic-default-fullname">Sender Name</label>
                         <input type="text" class="form-control" asp-for="@Model.SenderName" placeholder="example: Aylin Calci" />
                         <span class="text-danger" asp-validation-for="@Model.SenderName"></span>
                     </div>
+
                     <div class="mb-3">
                         <label class="form-label" for="basic-default-fullname">Receiver Name</label>
                         <input type="text" class="form-control" asp-for="@Model.ReceiverName" placeholder="example: Denizcan Darcan" />
                         <span class="text-danger" asp-validation-for="@Model.ReceiverName"></span>
                     </div>
+
                     <div class="mb-3">
                         <label for="exampleFormControlSelect1" class="form-label">Document Status</label>
                         <select class="form-select" asp-for="@Model.DocStatus" aria-label="Document Status">
@@ -63,11 +70,34 @@
                         </select>
                         <span class="text-danger" asp-validation-for="@Model.DocState"></span>
                     </div>
+
                     <div class="mb-3">
                         <label for="DepartmentId" class="form-label">Department</label>
                         <select class="form-control" asp-for="@Model.DepId" asp-items="ViewBag.Departments">
                             <option value="">Select a Department</option>
                         </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label" for="uploadedFile">Upload File</label>
+                        <input type="file" id="fileInput" name="uploadedFile" style="display: none;" />
+                        <div class="file-display" onclick="document.getElementById('fileInput').click();">
+                            <span id="fileName">
+                                @if (!string.IsNullOrEmpty(Model.FileName))
+
+                                {
+                                    <text>@Model.FileName</text>
+                                }
+
+                                else
+
+                                {
+                                    <text>Click to upload a file</text>
+                                }
+                            </span>
+                            <span id="removeFile" style="display: @(string.IsNullOrEmpty(Model.FileName) ? "none" : "inline");" onclick="removeFile(event)">&#x274C;</span>
+                        </div>
+                        <input type="hidden" asp-for="FileName" />
                     </div>
 
                     <div class="text-danger" asp-validation-summary="All"></div>
@@ -78,3 +108,49 @@
         </div>
     </div>
 </div>
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const fileNameSpan = document.getElementById('fileName');
+    const removeFileSpan = document.getElementById('removeFile');
+
+    fileInput.addEventListener('change', function () {
+        if (fileInput.files.length > 0) {
+            fileNameSpan.textContent = fileInput.files[0].name;
+            removeFileSpan.style.display = 'inline';
+        }
+    });
+
+    function removeFile(event) {
+        event.stopPropagation(); // Prevent the file dialog from reopening
+        fileInput.value = ''; // Clear the file input
+        fileNameSpan.textContent = 'Click to upload a file';
+        removeFileSpan.style.display = 'none';
+    }
+</script>
+
+<style>
+    .file-display {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 10px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f9f9f9;
+        cursor: pointer;
+    }
+
+    #removeFile {
+        margin-left: 10px;
+        cursor: pointer;
+        color: #888;
+    }
+
+    #fileName {
+        flex-grow: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>

@@ -58,6 +58,7 @@ namespace DocumentManagementSystem.UI.Controllers
             // Load announcements
             var announcements = await _announcementService.GetAllAsync();
             ViewData["Announcements"] = announcements;
+
             var docsQuery = from doc in _context.Documents
                             join dep in _context.Departments on doc.DepId equals dep.Id
                             select new
@@ -74,30 +75,45 @@ namespace DocumentManagementSystem.UI.Controllers
                                 DepartmentDefinition = dep.Definition
                             };
 
+            // Filter by search option
+            // Filter by search option
             if (!String.IsNullOrEmpty(search))
             {
-                int selectedOpt = int.Parse(searchopt ?? "0");
+                if (!int.TryParse(searchopt, out int selectedOpt))
+                {
+                    selectedOpt = 0; // Default to searching by Title
+                }
+
+                search = search.ToLower(); // Convert the search term to lowercase
 
                 switch (selectedOpt)
                 {
-                    case 1:
-                        docsQuery = docsQuery.Where(x => x.SenderName.Contains(search));
+                    case 1: // Sender
+                        docsQuery = docsQuery.Where(x => x.SenderName != null && x.SenderName.ToLower().Contains(search));
                         break;
-                    case 2:
-                        docsQuery = docsQuery.Where(x => x.ReceiverName.Contains(search));
+                    case 2: // Receiver
+                        docsQuery = docsQuery.Where(x => x.ReceiverName != null && x.ReceiverName.ToLower().Contains(search));
                         break;
-                    case 3:
-                        docsQuery = docsQuery.Where(x => x.TypeOfDoc.Contains(search));
+                    case 3: // Type of Doc
+                        docsQuery = docsQuery.Where(x => x.TypeOfDoc != null && x.TypeOfDoc.ToLower().Contains(search));
                         break;
-                    case 4:
-                        docsQuery = docsQuery.Where(x => x.ClassOfDoc.Contains(search));
+                    case 4: // Class of Doc
+                        docsQuery = docsQuery.Where(x => x.ClassOfDoc != null && x.ClassOfDoc.ToLower().Contains(search));
                         break;
-                    default:
-                        docsQuery = docsQuery.Where(x => x.Title.Contains(search));
+                    case 5: // Department
+                        docsQuery = docsQuery.Where(x => x.DepartmentDefinition != null && x.DepartmentDefinition.ToLower().Contains(search));
+                        break;
+                    case 6: // State
+                        docsQuery = docsQuery.Where(x => x.DocState.ToString().ToLower().Contains(search));
+                        break;
+                    default: // Title
+                        docsQuery = docsQuery.Where(x => x.Title != null && x.Title.ToLower().Contains(search));
                         break;
                 }
             }
 
+
+            // Sort the results
             switch (sortOption)
             {
                 case "title":
@@ -137,6 +153,8 @@ namespace DocumentManagementSystem.UI.Controllers
 
             return View("Index", dtos);
         }
+
+
 
 
         [Authorize(Roles = "Admin")]
@@ -269,15 +287,38 @@ namespace DocumentManagementSystem.UI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin,Moderator")]
-        public async Task<IActionResult> Edit(DocumentUpdateDto dto)
+        public async Task<IActionResult> Edit(DocumentUpdateDto dto, IFormFile uploadedFile)
         {
             if (dto.DocStatus == DocStatus.Delivered)
             {
                 dto.ReceiveDate = DateTime.Now;
             }
+
+            // Handle the uploaded file if it exists.
+            if (uploadedFile != null && uploadedFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/fileUpload");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + uploadedFile.FileName;
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await uploadedFile.CopyToAsync(fileStream);
+                }
+
+                // Use the original file name for the FileName property
+                dto.FileName = uploadedFile.FileName;
+                dto.FilePath = $"/fileUpload/{uniqueFileName}";
+            }
+
             var response = await _documentService.UpdateAsync(dto);
+
             return this.ResponseRedirectAction(response, "Index");
         }
+
+
 
         public async Task<IActionResult> Detail(int id)
         {

@@ -69,30 +69,24 @@
                     <label class="form-label" for="basic-default-fullname">Department</label>
                     <input type="text" class="form-control" asp-for="@Model.DepartmentDefinition" disabled />
                 </div>
-                @if (!string.IsNullOrEmpty(Model.FileName) && !(Model.FileName.EndsWith(".jpg") || Model.FileName.EndsWith(".jpeg") || Model.FileName.EndsWith(".png")))
 
+                @if (!string.IsNullOrEmpty(Model.FileName) && !(Model.FileName.EndsWith(".jpg") || Model.FileName.EndsWith(".jpeg") || Model.FileName.EndsWith(".png")))
                 {
                     <div class="file-info">
-                        <div class="file-name">
+                        <div class="file-info">
                             <strong>File:</strong> @Model.FileName
-                        </div>
-                        <div class="download-button">
                             <a href="@Url.Action("DownloadFile", "Home", new { fileName = Model.FileName })" class="btn btn-primary">
-                                <i class="fa fa-download"></i> Download File
+                                Download File
                             </a>
                         </div>
                     </div>
                 }
-
                 else if (!string.IsNullOrEmpty(Model.FileName))
-
                 {
                     <div class="file-name">
                         <strong>File:</strong> @Model.FileName (Image file cannot be downloaded)
                     </div>
                 }   
-
-
                 
             </div>
         </div>

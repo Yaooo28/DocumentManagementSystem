@@ -2,6 +2,16 @@
 @{
     Layout = "_Layout";
 }
+<style>
+    /* Ensure select elements match the height of the input fields */
+    .form-select, .form-control {
+        height: calc(2.25rem + 2px);
+    }
+    /* Adjust icon alignment in buttons */
+    .btn i {
+        vertical-align: middle;
+    }
+</style>
 
 <!-- Announcements Section -->
 @if (User.Identity.IsAuthenticated)
@@ -37,41 +47,51 @@
 }
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">List of /</span> Documents</h4>
+    <h4 class="fw-bold py-3 mb-4">
+        <span class="text-muted fw-light">List of /</span> Documents
+    </h4>
 
     <!-- Add New Document Button -->
     @if (User.IsInRole("Admin") || User.IsInRole("Moderator"))
+
     {
-        <a class="btn btn-primary mb-4 m-lg-3" asp-action="Create">Add New Document</a>
+        <a class="btn btn-primary mb-4" asp-action="Create">
+            <i class="bx bx-plus me-1"></i> Add New Document
+        </a>
     }
 
     <!-- Search Bar and Dropdowns -->
-    <form class="form-inline my-2 my-lg-0 row g-3" asp-action="Index" asp-controller="Home" method="get">
-        <div class="col-md-4">
-            <input class="form-control" type="search" placeholder="Search" aria-label="Search" name="search">
+    <form class="row g-3 align-items-center mb-4" asp-action="Index" asp-controller="Home" method="get">
+        <div class="col-md-5">
+            <div class="input-group">
+                <input class="form-control" type="search" placeholder="Search..." aria-label="Search" name="search">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="bx bx-search"></i>
+                </button>
+            </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <select class="form-select" name="searchopt">
                 <option value="0" selected>Title of Doc</option>
                 <option value="1">Sender</option>
                 <option value="2">Receiver</option>
                 <option value="3">Type of Doc</option>
                 <option value="4">Class of Doc</option>
+                <option value="5">Department</option>
+                <option value="6">State</option>
             </select>
         </div>
         <div class="col-md-3">
-            <select class="form-select" name="sortOption" placeholder="Sorting by...">
-                <option selected>Sort By</option>
+            <select class="form-select" name="sortOption">
+                <option value="" disabled selected>Sort By</option>
                 <option value="title">Title</option>
                 <option value="type">Document Type</option>
                 <option value="status">Status</option>
                 <option value="state">State</option>
             </select>
         </div>
-        <div class="col-md-1">
-            <button class="btn btn-outline-primary" type="submit">Search</button>
-        </div>
     </form>
+
 
     <!-- Document List Table -->
     <div class="card mt-4">
