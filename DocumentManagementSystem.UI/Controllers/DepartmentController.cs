@@ -51,5 +51,11 @@ namespace DocumentManagementSystem.UI.Controllers
                 return this.ResponseRedirectAction(createResponse, "Index");
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleteResponse = await _departmentService.RemoveAsync(id);
+            return this.ResponseRedirectAction(deleteResponse, "Index");
+        }
     }
 }

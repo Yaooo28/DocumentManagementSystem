@@ -20,7 +20,6 @@ namespace DocumentManagementSystem.UI.Controllers
         private readonly IMapper _mapper;
         private readonly IDeparmentService _departmentService;
 
-
         public UserController(IAppUserService appUserService, DocumentContext context, IMapper mapper, IDeparmentService departmentService)
         {
             _appUserService = appUserService;
@@ -34,6 +33,7 @@ namespace DocumentManagementSystem.UI.Controllers
             var users = await _appUserService.GetAllAsync();
             return this.ResponseView(users);
         }
+
         public async Task<IActionResult> Update(int id)
         {
             var user = _context.AppUsers.FirstOrDefault(x => x.Id == id);
@@ -47,13 +47,25 @@ namespace DocumentManagementSystem.UI.Controllers
             }
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Update(UserUpdateModel model)
         {
             var dto = _mapper.Map<AppUserUpdateDto>(model);
             await _appUserService.UpdateAsync(dto);
             return RedirectToAction("Index");
+        }
 
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var user = _context.AppUsers.FirstOrDefault(x => x.Id == id);
+            if (user != null)
+            {
+                await _appUserService.RemoveAsync(id);
+                return Ok();
+            }
+            return NotFound();
         }
     }
 }

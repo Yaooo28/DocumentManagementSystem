@@ -51,6 +51,7 @@
     <!-- Helpers -->
     <script src="/assets/vendor/js/helpers.js"></script>
     <script src="/assets/js/config.js"></script>
+     @RenderSection("Styles", required: false)
 </head>
 
 <body>
@@ -58,82 +59,92 @@
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
             <!-- Menu -->
-            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
-                <div class="app-brand demo">
-                    <a href="~/Home/Index" class="app-brand-link">
-                        <span class="fw-bolder ms-2">Document Management</span>
-                    </a>
-                </div>
+            @{
+                var currentController = Context.Request.RouteValues["controller"]?.ToString();
 
-                <div class="menu-inner-shadow"></div>
+                var currentAction = Context.Request.RouteValues["action"]?.ToString();
 
-                <ul class="menu-inner py-1">
-                    @if (User.Identity.IsAuthenticated)
+                var hideSidebar = (currentController == "Account" && (currentAction == "SignIn" || currentAction == "SignUp"));
+            }
+            @if (!hideSidebar)
+            {
+                    <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+                        <div class="app-brand demo">
+                            <a href="~/Home/Index" class="app-brand-link">
+                                <span class="fw-bolder ms-2">Document Management</span>
+                            </a>
+                        </div>
 
-                    {
-                        <li class="menu-item">
-                            <a asp-action="Index" asp-controller="Home" class="menu-link">
-                                <i class="menu-icon bx bx-home-circle"></i>
-                                <div>Home</div>
-                            </a>
-                        </li>
-                        <li class="menu-item">
-                            <a asp-controller="Account" asp-action="Detail" class="menu-link">
-                                <i class="menu-icon bx bx-user"></i>
-                                <div>Profile</div>
-                            </a>
-                        </li>
-                        <li class="menu-item">
-                            <a asp-action="LogOut" asp-controller="Account" class="menu-link">
-                                <i class="menu-icon bx bx-log-out"></i>
-                                <div>Logout</div>
-                            </a>
-                        </li>
-                        @if (User.IsInRole("Admin"))
+                        <div class="menu-inner-shadow"></div>
+
+                        <ul class="menu-inner py-1">
+                        @if (User.Identity.IsAuthenticated)
 
                         {
-                            <li class="menu-header small text-uppercase">
-                                <span class="menu-header-text">Admin Operations</span>
-                            </li>
-                            <li class="menu-item">
-                                <a asp-controller="User" asp-action="Index" class="menu-link">
-                                    <i class="menu-icon bx bx-collection"></i>
-                                    <div>User Operations</div>
-                                </a>
-                            </li>
-                            <li class="menu-item">
-                                <a asp-controller="Department" asp-action="Index" class="menu-link">
-                                    <i class="menu-icon bx bx-building"></i>
-                                    <div>Department Operations</div>
-                                </a>
-                            </li>
-                            <li class="menu-item">
-                                <a asp-controller="Announcement" asp-action="Index" class="menu-link">
-                                    <i class="menu-icon bx bx-bell"></i> <!-- Changed to bx-bell for testing -->
-                                    <div>Announcements</div>
-                                </a>
-                            </li>
+                                    <li class="menu-item">
+                                        <a asp-action="Index" asp-controller="Home" class="menu-link">
+                                            <i class="menu-icon bx bx-home-circle"></i>
+                                            <div>Home</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a asp-controller="Account" asp-action="Detail" class="menu-link">
+                                            <i class="menu-icon bx bx-user"></i>
+                                            <div>Profile</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a asp-action="LogOut" asp-controller="Account" class="menu-link">
+                                            <i class="menu-icon bx bx-log-out"></i>
+                                            <div>Logout</div>
+                                        </a>
+                                    </li>
+                            @if (User.IsInRole("Admin"))
+
+                            {
+                                            <li class="menu-header small text-uppercase">
+                                                <span class="menu-header-text">Admin Operations</span>
+                                            </li>
+                                            <li class="menu-item">
+                                                <a asp-controller="User" asp-action="Index" class="menu-link">
+                                                    <i class="menu-icon bx bx-collection"></i>
+                                                    <div>User Operations</div>
+                                                </a>
+                                            </li>
+                                            <li class="menu-item">
+                                                <a asp-controller="Department" asp-action="Index" class="menu-link">
+                                                    <i class="menu-icon bx bx-building"></i>
+                                                    <div>Department Operations</div>
+                                                </a>
+                                            </li>
+                                            <li class="menu-item">
+                                                <a asp-controller="Announcement" asp-action="Index" class="menu-link">
+                                                    <i class="menu-icon bx bx-bell"></i>
+                                                    <div>Announcements</div>
+                                                </a>
+                                            </li>
+                            }
                         }
-                    }
 
-                    else
+                        else
 
-                    {
-                        <li class="menu-item">
-                            <a asp-action="SignIn" asp-controller="Account" class="menu-link">
-                                <i class="menu-icon bx bx-log-in-circle"></i>
-                                <div>Login</div>
-                            </a>
-                        </li>
-                        <li class="menu-item">
-                            <a asp-action="SignUp" asp-controller="Account" class="menu-link">
-                                <i class="menu-icon bx bx-user-check"></i>
-                                <div>Sign Up</div>
-                            </a>
-                        </li>
-                    }
-                </ul>
-            </aside>
+                        {
+                                    <li class="menu-item">
+                                        <a asp-action="SignIn" asp-controller="Account" class="menu-link">
+                                            <i class="menu-icon bx bx-log-in-circle"></i>
+                                            <div>Login</div>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a asp-action="SignUp" asp-controller="Account" class="menu-link">
+                                            <i class="menu-icon bx bx-user-check"></i>
+                                            <div>Sign Up</div>
+                                        </a>
+                                    </li>
+                        }
+                        </ul>
+                    </aside>
+            }
             <!-- / Menu -->
             <div class="layout-page">
                 <div class="content-wrapper">
@@ -151,5 +162,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@2.11.6/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

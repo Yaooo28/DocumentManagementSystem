@@ -2,56 +2,278 @@
 @{
     Layout = "_Layout";
 }
-<section class="vh-100" style="background-color: #eee;">
-    <div class="container h-100">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-lg-12 col-xl-11">
-                <div class="card text-black" style="border-radius: 25px;">
-                    <div class="card-body p-md-5">
-                        <div class="row justify-content-center">
-                            <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
 
-                                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign in</p>
-                                <form class="mx-1 mx-md-4" method="post" asp-action="SignIn" asp-controller="Account">
+<!-- Custom Styles -->
+<style>
+    /* Navbar Styles */
+    .navbar-custom {
+        background-color: #097969; /* Medium Light Green */
+    }
 
-                                    <div class="d-flex flex-row align-items-center mb-3">
-                                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
-                                        <div class="form-outline flex-fill mb-0">
-                                            <input type="text" asp-for="@Model.Username" class="form-control" />
-                                            <label class="form-label">Username</label>
-                                            <span class="text-danger" asp-validation-for="@Model.Username"></span>
+        .navbar-custom .navbar-brand,
+        .navbar-custom .nav-link {
+            color: #ffffff !important;
+        }
 
-                                        </div>
-                                    </div>
-                                    <div class="d-flex flex-row align-items-center mb-3">
-                                        <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
-                                        <div class="form-outline flex-fill mb-0">
-                                            <input type="password" asp-for="@Model.Password" class="form-control" />
-                                            <label class="form-label">Password</label>
-                                            <span class="text-danger" asp-validation-for="@Model.Password"></span>
+    .navbar-toggler {
+        border-color: rgba(255, 255, 255, 0.1);
+    }
 
-                                        </div>
-                                    </div>
-                                    <div class="form-check ml-2">
-                                        <input class="form-check-input" type="checkbox" asp-for="@Model.RememberMe" id="flexCheckDefault">
-                                        <label class="form-check-label" for="flexCheckDefault">
-                                            Remember Me
-                                        </label>
-                                    </div>
-                                    <div class="text-danger" asp-validation-summary="All"></div>
+    .navbar-toggler-icon {
+        color: #ffffff;
+    }
 
-                                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                                        <button type="submit" class="btn btn-primary btn-lg">Login</button>
-                                    </div>
+    /* Landing Page Styles */
+    .landing-page {
+        background-color: #ffffff; /* Very Light Green */
+        padding: 120px 0;
+    }
 
-                                </form>
+        .landing-page h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #097969; /* Darker Green for Contrast */
+            margin-bottom: 20px;
+        }
 
-                            </div>
-                           
-                        </div>
-                    </div>
+        .landing-page p {
+            font-size: 1.25rem;
+            color: #6c757d;
+            margin-bottom: 40px;
+        }
+
+        .landing-page .btn {
+            font-size: 1.25rem;
+            padding: 12px 30px;
+            background-color: #097969;
+            border: none;
+            color: #ffffff;
+            transition: background-color 0.3s ease;
+        }
+
+    /* Member Section Styles */
+    .features-section {
+        background-color: #097969;
+        padding: 80px 0;
+    }
+
+        .features-section h2 {
+            color: #ffffff;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+
+        .features-section .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+            .features-section .card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .features-section .card h4 {
+                color: #097969;
+                font-weight: bold;
+                margin-top: 20px;
+            }
+
+            .features-section .card p {
+                color: #6c757d;
+            }
+
+            /* New CSS for resizing and cropping images */
+            .features-section .card img {
+                width: 150px;
+                height: 150px;
+                object-fit: cover;
+                border-radius: 5px;
+            }
+
+    /* Contact Section Styles */
+    .contact-section {
+        background-color: #e8f5e9; /* Light Green Background */
+        padding: 80px 0;
+    }
+
+        .contact-section h2 {
+            color: #097969;
+            font-weight: bold;
+            margin-bottom: 40px;
+        }
+
+    .contact-info h4 {
+        font-weight: bold;
+        color: #097969;
+    }
+
+    .contact-info p {
+        color: #6c757d;
+    }
+
+    /* Modal Styles */
+    .modal-header {
+        border-bottom: none;
+    }
+
+    .modal-content {
+        border-radius: 10px;
+    }
+
+    .modal-footer {
+        border-top: none;
+    }
+
+    .modal-body input {
+        margin-bottom: 15px;
+    }
+
+    .modal-body .btn {
+        background-color: #097969;
+        border: none;
+        color: #ffffff;
+    }
+</style>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+        <a class="navbar-brand" href="#">Document Tracking System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon">&#9776;</span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto align-items-center">
+                <li class="nav-item">
+                    <a class="nav-link" href="#home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#about">Features</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#contact">Contact</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Landing Page Section -->
+<section id="home" class="landing-page">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-5">
+                <h1>Welcome to Document Tracking System</h1>
+                <p>
+                    Manage your documents efficiently and securely with our state-of-the-art system.
+                    Our platform provides easy access and organization, allowing you to store, track, and retrieve files anytime, anywhere.
+                </p>
+                <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#loginModal">
+                    Sign In
+                </button>
+            </div>
+            <div class="col-lg-6 text-center">
+                <!-- Optional Image -->
+                <img src="~/Pictures/cityhall.jpg" alt="City Hall" class="img-fluid rounded shadow-sm">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Member Section -->
+<section id="about" class="features-section">
+    <div class="container">
+        <h2 class="text-center">Our Members</h2>
+        <div class="row">
+            <div class="col-md-4 text-center mb-5">
+                <div class="card p-4">
+                    <img src="~/Pictures/daniel.jpg" alt="Pineda, Daniel P." class="mx-auto mb-3">
+                    <h4>Pineda, Daniel P.</h4>
+                </div>
+            </div>
+            <div class="col-md-4 text-center mb-5">
+                <div class="card p-4">
+                    <img src="~/Pictures/randolf.jpg" alt="Geulin, Randolf R." class="mx-auto mb-3">
+                    <h4>Geulin, Randolf R.</h4>
+                </div>
+            </div>
+            <div class="col-md-4 text-center mb-5">
+                <div class="card p-4">
+                    <img src="~/Pictures/jake.jpg" alt="Cervano, Jake G." class="mx-auto mb-3">
+                    <h4>Cervano, Jake G.</h4>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Contact Section -->
+<section id="contact" class="contact-section">
+    <div class="container">
+        <h2 class="text-center">Get in Touch</h2>
+        <p class="text-center mb-5"><strong>We'd love to hear from you. Reach out to us with any questions or feedback.</strong></p>
+        <div class="row">
+            <div class="col-md-6 mb-4 contact-info text-center">
+                <h4>Email Us</h4>
+                <p>danphiekiel@yahoo.com.ph</p>
+            </div>
+            <div class="col-md-6 mb-4 contact-info text-center">
+                <h4>Call Us</h4>
+                <p>+6393-2794-1574</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sign In Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title w-100 text-center" id="loginModalLabel">
+                    <strong>Sign In to Document Tracking System</strong>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="border: none; background: none;">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-action="SignIn" asp-controller="Account">
+                    <div class="form-group">
+                        <input type="text" asp-for="Username" class="form-control" placeholder="Username" />
+                        <span class="text-danger" asp-validation-for="Username"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" asp-for="Password" class="form-control" placeholder="Password" />
+                        <span class="text-danger" asp-validation-for="Password"></span>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" asp-for="RememberMe" id="rememberMeCheck">
+                        <label class="form-check-label" for="rememberMeCheck">
+                            Remember Me
+                        </label>
+                    </div>
+                    <div class="text-danger mb-3" asp-validation-summary="All"></div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Sign In
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <p class="mx-auto">Don't have an account? <a href="/Account/SignUp" style="color: #097969;">Sign Up</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include necessary scripts for Bootstrap modals to function -->
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Popper.js for Bootstrap modals -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+}

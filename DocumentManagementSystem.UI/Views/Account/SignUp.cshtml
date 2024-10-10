@@ -2,106 +2,106 @@
 @{
     Layout = "_Layout";
 }
-<section class="vh-100" style="background-color: #eee;">
+
+<!-- Custom Styles -->
+<style>
+    /* Background Color for the Page */
+    body {
+        background-color: #f1f8e9; /* Very Light Green */
+    }
+
+    /* Card and Button Styles */
+    .card {
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary {
+        background-color: #097969; /* Medium Light Green */
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #57a05a; /* Darker Green on Hover */
+        }
+
+    .btn-danger {
+        background-color: #e57373; /* Light Red for contrast */
+        border: none;
+    }
+
+        .btn-danger:hover {
+            background-color: #d32f2f; /* Darker Red on Hover */
+        }
+
+    .form-control, .form-select {
+        border-radius: 5px;
+        border: 1px solid #097969; /* Border color matching the theme */
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #388e3c; /* Darker Green Focus Border */
+            box-shadow: 0 0 5px rgba(56, 142, 60, 0.3); /* Light Green Focus Shadow */
+        }
+
+    h3 {
+        color: #388e3c; /* Darker Green */
+    }
+
+    p {
+        color: #6c757d;
+    }
+</style>
+
+<section class="vh-100">
     <div class="container h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-lg-12 col-xl-11">
-                <div class="card text-black" style="border-radius: 25px;">
-                    <div class="card-body p-md-5">
-                        <div class="row justify-content-center">
-                            <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
-
-                                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
-                                <form class="mx-1 mx-md-4" method="post" asp-action="SignUp" asp-controller="Account">
-
-                                    <div class="d-flex flex-row align-items-center mb-3">
-                                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
-                                        <div class="form-outline flex-fill mb-0">
-                                            <input type="text" asp-for="@Model.Username" class="form-control" />
-                                            <label class="form-label" >Username</label>
-                                            <span class="text-danger" asp-validation-for="@Model.Username"></span>
-
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex flex-row align-items-center mb-3">
-                                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
-                                        <div class="form-outline flex-fill mb-0">
-                                            <input type="text" asp-for="@Model.FirstName" class="form-control" />
-                                            <label class="form-label" >Your First Name</label>
-                                            <span class="text-danger" asp-validation-for="@Model.FirstName"></span>
-
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex flex-row align-items-center mb-3">
-                                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
-                                        <div class="form-outline flex-fill mb-0">
-                                            <input type="text" asp-for="@Model.LastName" class="form-control" />
-                                            <label class="form-label" >Your Last Name</label>
-                                            <span class="text-danger" asp-validation-for="@Model.LastName"></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex flex-row align-items-center mb-3">
-                                        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
-                                        <div class="form-outline flex-fill mb-0">
-                                            <input type="email" asp-for="@Model.Email" class="form-control" />
-                                            <label class="form-label" >Your Email</label>
-                                            <span class="text-danger" asp-validation-for="@Model.Email"></span>
-
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex flex-row align-items-center mb-3">
-                                        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
-                                        <div class="form-outline flex-fill mb-0">
-                                            <input type="text" asp-for="@Model.PhoneNumber" class="form-control" />
-                                            <label class="form-label" >Your Phone</label>
-                                            <span class="text-danger" asp-validation-for="@Model.PhoneNumber"></span>
-
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex flex-row align-items-center mb-3">
-                                        <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
-                                        <div class="form-outline flex-fill mb-0">
-                                            <input type="password" asp-for="@Model.Password" class="form-control" />
-                                            <label class="form-label" >Password</label>
-                                            <span class="text-danger" asp-validation-for="@Model.Password"></span>
-
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex flex-row align-items-center mb-3">
-                                        <i class="fas fa-key fa-lg me-3 fa-fw"></i>
-                                        <div class="form-outline flex-fill mb-0">
-                                            <input type="password" asp-for="@Model.ConfirmPassword" class="form-control" />
-                                            <label class="form-label" >Repeat your password</label>
-                                            <span class="text-danger" asp-validation-for="@Model.ConfirmPassword"></span>
-
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex flex-row align-items-center mb-3">
-                                        <i class="fas fa-key fa-lg me-3 fa-fw"></i>
-                                        <div class="form-outline flex-fill mb-2">
-                                            <select class="form-select" asp-items="@Model.Departments" asp-for="@Model.DeparmentId">
-                                                <option value="0">Please select your department</option>
-                                        <span class="text-danger" asp-validation-for="@Model.Departments"></span>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="text-danger" asp-validation-summary="All"></div>
-
-                                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                                        <button type="submit" class="btn btn-primary btn-lg">Register</button>
-                                    </div>
-                                </form>
-
+            <div class="col-lg-5 col-md-8">
+                <div class="card">
+                    <div class="card-body p-4">
+                        <h3 class="text-center mb-4" style="color: #097969;">Create your account</h3>
+                        <p class="text-center text-muted mb-4">Take 60 Seconds With Us</p>
+                        <form method="post" asp-action="SignUp" asp-controller="Account">
+                            <div class="mb-3">
+                                <input type="text" asp-for="@Model.Username" class="form-control" placeholder="Username" />
+                                <span class="text-danger" asp-validation-for="@Model.Username"></span>
                             </div>
-
-                        </div>
+                            <div class="mb-3">
+                                <input type="text" asp-for="@Model.FirstName" class="form-control" placeholder="Your First Name" />
+                                <span class="text-danger" asp-validation-for="@Model.FirstName"></span>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" asp-for="@Model.LastName" class="form-control" placeholder="Your Last Name" />
+                                <span class="text-danger" asp-validation-for="@Model.LastName"></span>
+                            </div>
+                            <div class="mb-3">
+                                <input type="email" asp-for="@Model.Email" class="form-control" placeholder="Your Email" />
+                                <span class="text-danger" asp-validation-for="@Model.Email"></span>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" asp-for="@Model.PhoneNumber" class="form-control" placeholder="Your Phone" />
+                                <span class="text-danger" asp-validation-for="@Model.PhoneNumber"></span>
+                            </div>
+                            <div class="mb-3">
+                                <input type="password" asp-for="@Model.Password" class="form-control" placeholder="Password" />
+                                <span class="text-danger" asp-validation-for="@Model.Password"></span>
+                            </div>
+                            <div class="mb-3">
+                                <input type="password" asp-for="@Model.ConfirmPassword" class="form-control" placeholder="Repeat your password" />
+                                <span class="text-danger" asp-validation-for="@Model.ConfirmPassword"></span>
+                            </div>
+                            <div class="mb-3">
+                                <select class="form-select" asp-items="@Model.Departments" asp-for="@Model.DeparmentId">
+                                    <option value="0">Please select your department</option>
+                                </select>
+                                <span class="text-danger" asp-validation-for="@Model.Departments"></span>
+                            </div>
+                            <div class="text-danger" asp-validation-summary="All"></div>
+                            <div class="d-flex justify-content-between">
+                                <button type="submit" class="btn btn-primary" style="width: 45%;">Register</button>
+                                <a href="/Account/SignIn" class="btn btn-danger" style="width: 45%;">Log In</a>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -22,6 +22,18 @@
                         <label class="form-label" for="basic-default-fullname">Class of Document</label>
                         <select class="form-control" asp-for="@Model.TypeOfDoc">
                             <option value="">Select Document Type</option>
+                            <option value="confidential">Confidential</option>
+                            <option value="restricted">Restricted</option>
+                            <option value="public">Public</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="@Model.TypeOfDoc"></span>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label class="form-label" for="basic-default-fullname">Type of Document</label>
+                        <select class="form-control" asp-for="@Model.ClassOfDoc">
+                            <option value="">Select Document Type</option>
                             <option value="reports">Reports</option>
                             <option value="research reports">Research Reports</option>
                             <option value="statistical publications">Statistical Publications</option>
@@ -31,15 +43,11 @@
                             <option value="budgets">Budgets</option>
                             <option value="transactional documents">Transactional Documents</option>
                             <option value="financial reports">Financial Reports</option>
+                            <option value="payroll">Payroll</option>
                         </select>
-                        <span class="text-danger" asp-validation-for="@Model.TypeOfDoc"></span>
+                        <span class="text-danger" asp-validation-for="@Model.ClassOfDoc"></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label" for="basic-default-fullname">Type of Document</label>
-                        <input type="text" class="form-control" asp-for="@Model.ClassOfDoc" placeholder="example: Report" />
-                    <span class="text-danger" asp-validation-for="@Model.ClassOfDoc"></span>
-                </div>
                 <div class="mb-3">
                     <label for="exampleFormControlSelect1" class="form-label">Document State</label>
                     <select class="form-select" asp-for="@Model.DocState" aria-label="Document State">
@@ -49,13 +57,14 @@
                     </select>
                     <span class="text-danger" asp-validation-for="@Model.DocState"></span>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label" for="basic-default-message">Description</label>
-                    <textarea asp-for="@Model.Description"
-                                class="form-control"
-                                  placeholder="Descripe document content"></textarea>
-                        <span class="text-danger" asp-validation-for="@Model.Description"></span>
+                    <div class="mb-3">
+                        <label class="form-label" for="basic-default-message">Description</label>
+                        <textarea asp-for="Description"
+                                  class="form-control"
+                                  placeholder="Describe document content"></textarea>
+                        <span class="text-danger" asp-validation-for="Description"></span>
                     </div>
+
 
                     <div class="mb-3">
                         <label class="form-label" for="basic-default-fullname">Sender Name</label>

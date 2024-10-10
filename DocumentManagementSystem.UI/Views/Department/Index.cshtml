@@ -14,16 +14,33 @@
                     <tr>
                         <th>Department ID</th>
                         <th>Department Name</th>
-                        <th>Edit</th>
+                        <th>Actions</th> <!-- Combined the action buttons into a single column -->
                     </tr>
                 </thead>
                 <tbody class="table-border-bottom-0">
-                    @foreach (var deparment in Model)
+                    @foreach (var department in Model)
+
                     {
                         <tr>
-                            <td><strong>@deparment.Id</strong></td>
-                            <td>@deparment.Definition</td>
-                            <td><a class="btn btn-info" asp-action="Update" asp-route-id="@deparment.Id">Edit</a></td>
+                            <td><strong>@department.Id</strong></td>
+                            <td>@department.Definition</td>
+                            <td>
+                                <!-- Edit Button -->
+                                <a class="btn btn-info" asp-action="Update" asp-route-id="@department.Id">Edit</a>
+
+                                <!-- Delete Button with Confirmation -->
+                                <form asp-action="Delete" asp-route-id="@department.Id" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this department?');">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                    <!-- Handle case when no departments are available -->
+                    @if (!Model.Any())
+
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center">No departments available.</td>
                         </tr>
                     }
                 </tbody>
