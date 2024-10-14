@@ -3,25 +3,6 @@
     Layout = "_Layout";
 }
 
-<form class="form-inline my-2 my-lg-0 m-4 row" asp-action="Index" asp-controller="Home" method="get">
-    <input class="form-control mr-sm-2 mt-3" type="search" placeholder="Search" aria-label="Search" name="search">
-    <select class="form-select mt-2" name="searchopt">
-        <option value="0" selected>Title of Doc</option>
-        <option value="1">Sender</option>
-        <option value="2">Receiver</option>
-        <option value="3">Type of Doc</option>
-        <option value="4">Class of Doc</option>
-    </select>
-    <select class="form-select mt-2" name="sortOption">
-        <option selected>Sort By</option>
-        <option value="title">Title</option>
-        <option value="type">Document Type</option>
-        <option value="status">Status</option>
-        <option value="state">State</option>
-    </select>
-    <button class="btn btn-outline-primary mt-3" type="submit">Search</button>
-</form>
-
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">List of /</span> Users</h4>
     <div class="card">
@@ -29,7 +10,6 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>Id</th>
                         <th>Username</th>
                         <th>First Name</th>
                         <th>Last Name</th>
@@ -41,7 +21,6 @@
 
                     {
                         <tr data-user-id="@user.Id">
-                            <td><strong>@user.Id</strong></td>
                             <td>@user.Username</td>
                             <td>@user.FirstName</td>
                             <td>@user.LastName</td>
@@ -63,6 +42,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Custom Delete Confirmation Modal -->
 <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationLabel" aria-hidden="true">

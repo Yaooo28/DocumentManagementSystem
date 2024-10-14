@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentManagementSystem.Bu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentManagementSystem.UI", "DocumentManagementSystem.UI\DocumentManagementSystem.UI.csproj", "{5E5296A1-64A2-4238-A27C-B287B8735137}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentManagementSystem.Dtos", "DocumentManagementSystem.Dtos\DocumentManagementSystem.Dtos.csproj", "{D819F7A3-CE62-4566-A104-248001FCA260}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentManagementSystem.Dtos", "DocumentManagementSystem.Dtos\DocumentManagementSystem.Dtos.csproj", "{D819F7A3-CE62-4566-A104-248001FCA260}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

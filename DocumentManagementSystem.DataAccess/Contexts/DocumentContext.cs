@@ -2,6 +2,7 @@
 using DocumentManagementSystem.Entities;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace DocumentManagementSystem.DataAccess.Contexts
 {
     public class DocumentContext : DbContext

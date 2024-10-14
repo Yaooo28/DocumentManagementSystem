@@ -1,0 +1,84 @@
+﻿@{
+    Layout = "_Layout";
+}
+<style>
+    /* Softer, more neutral colors for table and design */
+    .table-custom {
+        background-color: #fafafa; /* Soft grey background for the table */
+    }
+
+        .table-custom thead {
+            background-color: #9e9edc; /* Soft muted violet for the table headers */
+            color: white;
+        }
+
+        .table-custom tbody tr:nth-child(odd) {
+            background-color: #f9f9fc; /* Very light greyish blue for odd rows */
+        }
+
+        .table-custom tbody tr:nth-child(even) {
+            background-color: #ffffff; /* White for even rows */
+        }
+
+    /* Styling for the View Details button */
+    .btn-info {
+        background-color: #5b77d0;
+        border-color: #5b77d0;
+    }
+
+        /* Remove hover effect for the View Details button */
+        .btn-info:hover {
+            background-color: #5b77d0; /* Same color as normal, no hover change */
+            border-color: #5b77d0; /* Same border color on hover */
+        }
+
+    /* Styling for the Export button */
+    .btn-primary {
+        background-color: #7d85d4;
+        border-color: #7d85d4;
+    }
+
+    /* Softer title color */
+    h2 {
+        color: #4f4fa1;
+    }
+
+    body {
+        background-color: #f3f3fa; /* Subtle background color */
+    }
+</style>
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Reports</h2>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-striped align-middle table-custom">
+            <thead>
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Sender</th>
+                    <th scope="col">Receiver</th>
+                    <th scope="col">Created Date</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.TypeOfDoc</td>
+                        <td>@item.SenderName</td>
+                        <td>@item.ReceiverName</td>
+                        <td>@item.CreatedDate.ToString("MM/dd/yyyy h:mm tt")</td>
+                        <td>
+                            <a href="/Report/Details/@item.Id" class="btn btn-info btn-sm">View Details</a>
+                            <a href="/Report/ExportDetails/@item.Id" class="btn btn-primary btn-sm">Export</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
