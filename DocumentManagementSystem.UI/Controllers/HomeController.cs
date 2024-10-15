@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DocumentManagementSystem.Business.Interfaces;
+using DocumentManagementSystem.Business.Services;
 using DocumentManagementSystem.Common;
 using DocumentManagementSystem.DataAccess.Contexts;
 using DocumentManagementSystem.Dtos;
@@ -28,6 +29,7 @@ namespace DocumentManagementSystem.UI.Controllers
     {
         private readonly IDocumentService _documentService;
         private readonly IAnnouncementService _announcementService;
+        private readonly IAppUserService _appUserService;
         private readonly IValidator<DocumentCreateDto> _documentCreateValidator;
         private readonly DocumentContext _context;
         private readonly IMapper _mapper;
@@ -39,6 +41,7 @@ namespace DocumentManagementSystem.UI.Controllers
         public HomeController(
             IDocumentService documentService,
             IAnnouncementService announcementService,
+            IAppUserService appUserService,
             IValidator<DocumentCreateDto> documentCreateValidator,
             DocumentContext context,
             IMapper mapper,
@@ -47,6 +50,7 @@ namespace DocumentManagementSystem.UI.Controllers
         {
             _documentService = documentService;
             _announcementService = announcementService;
+            _appUserService = appUserService;
             _documentCreateValidator = documentCreateValidator;
             _context = context;
             _mapper = mapper;
@@ -55,6 +59,40 @@ namespace DocumentManagementSystem.UI.Controllers
 
         public async Task<IActionResult> Index([FromQuery] string search, [FromQuery] string searchopt, [FromQuery] string sortOption)
         {
+            // Retrieve the roles of the current user
+            var userRoles = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
+
+            // Retrieve the current user's DeparmentId (you can fetch this from the claims or from the database)
+            // Assuming DepartmentId is stored in the user's claims
+            int? userDepartmentId = null;
+
+            // Example: If DepartmentId is stored as a claim
+            var departmentClaim = User.FindFirst("DeparmentId");
+            if (departmentClaim != null)
+            {
+                userDepartmentId = int.Parse(departmentClaim.Value);
+            }
+            else
+            {
+                // Fetch user data from IAppUserService instead of identityContext or DocumentContext
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Assuming the user ID is in the claims
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    // Use IAppUserService to get the user's DepartmentId
+                    var userResponse = await _appUserService.GetUserByIdAsync(int.Parse(userId));
+                    if (userResponse.ResponseType == ResponseType.Success && userResponse.Data != null)
+                    {
+                        userDepartmentId = userResponse.Data.DeparmentId;
+                    }
+                }
+            }
+
+            // If DeparmentId is still null, return a BadRequest
+            if (!userDepartmentId.HasValue)
+            {
+                return BadRequest("Department information not found for the current user.");
+            }
+
             // Load announcements
             var announcements = await _announcementService.GetAllAsync();
             ViewData["Announcements"] = announcements;
@@ -72,10 +110,16 @@ namespace DocumentManagementSystem.UI.Controllers
                                 doc.DocStatus,
                                 doc.DocState,
                                 doc.SendDate,
-                                DepartmentDefinition = dep.Definition
+                                DepartmentDefinition = dep.Definition,
+                                doc.DepId
                             };
 
-            // Filter by search option
+            // If the user is NOT an Admin or Moderator, apply the Department filter
+            if (!userRoles.Contains("Admin") && !userRoles.Contains("Moderator"))
+            {
+                docsQuery = docsQuery.Where(x => x.DepId == userDepartmentId.Value);
+            }
+
             // Filter by search option
             if (!String.IsNullOrEmpty(search))
             {
@@ -86,56 +130,36 @@ namespace DocumentManagementSystem.UI.Controllers
 
                 search = search.ToLower(); // Convert the search term to lowercase
 
-                switch (selectedOpt)
+                docsQuery = selectedOpt switch
                 {
-                    case 1: // Sender
-                        docsQuery = docsQuery.Where(x => x.SenderName != null && x.SenderName.ToLower().Contains(search));
-                        break;
-                    case 2: // Receiver
-                        docsQuery = docsQuery.Where(x => x.ReceiverName != null && x.ReceiverName.ToLower().Contains(search));
-                        break;
-                    case 3: // Type of Doc
-                        docsQuery = docsQuery.Where(x => x.TypeOfDoc != null && x.TypeOfDoc.ToLower().Contains(search));
-                        break;
-                    case 4: // Class of Doc
-                        docsQuery = docsQuery.Where(x => x.ClassOfDoc != null && x.ClassOfDoc.ToLower().Contains(search));
-                        break;
-                    case 5: // Department
-                        docsQuery = docsQuery.Where(x => x.DepartmentDefinition != null && x.DepartmentDefinition.ToLower().Contains(search));
-                        break;
-                    case 6: // State
-                        docsQuery = docsQuery.Where(x => x.DocState.ToString().ToLower().Contains(search));
-                        break;
-                    default: // Title
-                        docsQuery = docsQuery.Where(x => x.Title != null && x.Title.ToLower().Contains(search));
-                        break;
-                }
+                    // Sender
+                    1 => docsQuery.Where(x => x.SenderName != null && x.SenderName.ToLower().Contains(search)),
+                    // Receiver
+                    2 => docsQuery.Where(x => x.ReceiverName != null && x.ReceiverName.ToLower().Contains(search)),
+                    // Type of Doc
+                    3 => docsQuery.Where(x => x.TypeOfDoc != null && x.TypeOfDoc.ToLower().Contains(search)),
+                    // Class of Doc
+                    4 => docsQuery.Where(x => x.ClassOfDoc != null && x.ClassOfDoc.ToLower().Contains(search)),
+                    // Department
+                    5 => docsQuery.Where(x => x.DepartmentDefinition != null && x.DepartmentDefinition.ToLower().Contains(search)),
+                    // State
+                    6 => docsQuery.Where(x => x.DocState.ToString().ToLower().Contains(search)),
+                    // Title
+                    _ => docsQuery.Where(x => x.Title != null && x.Title.ToLower().Contains(search)),
+                };
             }
 
 
             // Sort the results
-            switch (sortOption)
+            docsQuery = sortOption switch
             {
-                case "title":
-                    docsQuery = docsQuery.OrderBy(x => x.Title);
-                    break;
-                case "type":
-                    docsQuery = docsQuery.OrderBy(x => x.TypeOfDoc);
-                    break;
-                case "status":
-                    docsQuery = docsQuery.OrderBy(x => x.DocStatus);
-                    break;
-                case "state":
-                    docsQuery = docsQuery.OrderBy(x => x.DocState);
-                    break;
-                case "senddate":
-                    docsQuery = docsQuery.OrderByDescending(x => x.SendDate);
-                    break;
-                default:
-                    docsQuery = docsQuery.OrderBy(x => x.Id);
-                    break;
-            }
-
+                "title" => docsQuery.OrderBy(x => x.Title),
+                "type" => docsQuery.OrderBy(x => x.TypeOfDoc),
+                "status" => docsQuery.OrderBy(x => x.DocStatus),
+                "state" => docsQuery.OrderBy(x => x.DocState),
+                "senddate" => docsQuery.OrderByDescending(x => x.SendDate),
+                _ => docsQuery.OrderBy(x => x.Id),
+            };
             var docs = await docsQuery.ToListAsync();
             var dtos = docs.Select(x => new DocumentListDto
             {

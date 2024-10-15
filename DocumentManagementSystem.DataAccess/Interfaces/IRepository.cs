@@ -21,4 +21,5 @@ namespace DocumentManagementSystem.DataAccess.Interfaces
         Task CreateAsync(T entity);
         void Update(T entity, T unchanged);
     }
+
 }

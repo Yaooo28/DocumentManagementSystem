@@ -6,6 +6,7 @@ using DocumentManagementSystem.DataAccess.UnitOfWork;
 using DocumentManagementSystem.Dtos;
 using DocumentManagementSystem.Entities;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace DocumentManagementSystem.Business.Services
         private readonly IMapper _mapper;
         private readonly IValidator<AppUserCreateDto> _createDtoValidator;
         private readonly IValidator<AppUserLoginDto> _loginDtoValidator;
+
         public AppUserService(IMapper mapper, IValidator<AppUserCreateDto> createDtoValidator, IValidator<AppUserUpdateDto> updateDtoValidator, IUow uow, IValidator<AppUserLoginDto> loginDtoValidator) :
             base(mapper, createDtoValidator, updateDtoValidator, uow)
         {
@@ -92,5 +94,24 @@ namespace DocumentManagementSystem.Business.Services
             var dto = _mapper.Map<List<AppRoleListDto>>(roles);
             return new Response<List<AppRoleListDto>>(ResponseType.Success, dto);
         }
+
+        public async Task<IResponse<AppUserListDto>> GetUserByIdAsync(int userId)
+        {
+            // Use UoW to get the repository for AppUser and retrieve the user by userId
+            var user = await _uow.GetRepository<AppUser>()
+                                 .GetByFilterAsync(u => u.Id == userId);
+
+            // If user is not found, return a NotFound response
+            if (user == null)
+            {
+                return new Response<AppUserListDto>(ResponseType.NotFound, "User not found");
+            }
+
+            // Use AutoMapper to map the user entity to AppUserListDto
+            var appUserDto = _mapper.Map<AppUserListDto>(user);
+
+            return new Response<AppUserListDto>(ResponseType.Success, appUserDto);
+        }
+
     }
 }
