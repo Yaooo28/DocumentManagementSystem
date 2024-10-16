@@ -178,9 +178,7 @@ namespace DocumentManagementSystem.UI.Controllers
             return View("Index", dtos);
         }
 
-
-
-
+ 
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -205,7 +203,6 @@ namespace DocumentManagementSystem.UI.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> Create([FromForm] DocumentCreateDto model, IFormFile file)
         {
             var result = _documentCreateValidator.Validate(model);
@@ -272,9 +269,7 @@ namespace DocumentManagementSystem.UI.Controllers
             return View(model);
         }
 
-
         [HttpGet]
-        [Authorize]
         public IActionResult DownloadFile(string fileName)
         {
             string fileUploadFolder = Path.Combine(_webHostEnvironment.WebRootPath, "fileUpload");
@@ -299,7 +294,6 @@ namespace DocumentManagementSystem.UI.Controllers
         }
 
 
-        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> Edit(int id)
         {
             var response = await _documentService.GetByIdAsync<DocumentUpdateDto>(id);
@@ -310,7 +304,6 @@ namespace DocumentManagementSystem.UI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> Edit(DocumentUpdateDto dto, IFormFile uploadedFile)
         {
             if (dto.DocStatus == DocStatus.Delivered)
