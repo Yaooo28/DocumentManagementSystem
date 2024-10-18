@@ -131,13 +131,17 @@
                                     </button>
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" asp-controller="Home" asp-action="Detail" asp-route-id="@item.Id">
-                                            <i class="bx bx-file me-1"></i> View Details
+                                            <i class="bx bx-file me-1"></i> Details
                                         </a>
                                         @if (User.IsInRole("Admin") || User.IsInRole("Moderator") || User.IsInRole("Member"))
                                         {
                                             <a class="dropdown-item" asp-controller="Home" asp-action="Edit" asp-route-id="@item.Id">
                                                 <i class="bx bx-edit-alt me-1"></i> Edit
                                             </a>
+                                            <a class="dropdown-item" asp-controller="Home" asp-action="Remarks" asp-route-id="@item.Id">
+                                                <i class="bx bx-edit-alt me-1"></i> Remarks
+                                            </a>
+
                                                 @if (User.IsInRole("Admin"))
                                                 {
                                                 <a class="dropdown-item" asp-controller="Home" asp-action="Delete" asp-route-id="@item.Id">

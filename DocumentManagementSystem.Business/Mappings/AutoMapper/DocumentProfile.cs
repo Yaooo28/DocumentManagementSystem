@@ -12,7 +12,7 @@ namespace DocumentManagementSystem.Business.Mappings.AutoMapper
             CreateMap<Document, DocumentListDto>().ReverseMap();
             CreateMap<Document, DocumentCreateDto>().ReverseMap();
             CreateMap<Document, DocumentUpdateDto>().ReverseMap();
-
+            CreateMap<Document, DocumentRemarksDto>().ReverseMap();
         }
     }
 }

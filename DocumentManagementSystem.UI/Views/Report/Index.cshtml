@@ -1,56 +1,64 @@
-﻿@{
+﻿@model IEnumerable<DocumentManagementSystem.Entities.Document>
+@{
     Layout = "_Layout";
 }
-<style>
-    /* Softer, more neutral colors for table and design */
-    .table-custom {
-        background-color: #fafafa; /* Soft grey background for the table */
-    }
 
-        .table-custom thead {
-            background-color: #9e9edc; /* Soft muted violet for the table headers */
-            color: white;
-        }
-
-        .table-custom tbody tr:nth-child(odd) {
-            background-color: #f9f9fc; /* Very light greyish blue for odd rows */
-        }
-
-        .table-custom tbody tr:nth-child(even) {
-            background-color: #ffffff; /* White for even rows */
-        }
-
-    /* Styling for the View Details button */
-    .btn-info {
-        background-color: #5b77d0;
-        border-color: #5b77d0;
-    }
-
-        /* Remove hover effect for the View Details button */
-        .btn-info:hover {
-            background-color: #5b77d0; /* Same color as normal, no hover change */
-            border-color: #5b77d0; /* Same border color on hover */
-        }
-
-    /* Styling for the Export button */
-    .btn-primary {
-        background-color: #7d85d4;
-        border-color: #7d85d4;
-    }
-
-    /* Softer title color */
-    h2 {
-        color: #4f4fa1;
-    }
-
-    body {
-        background-color: #f3f3fa; /* Subtle background color */
-    }
-</style>
+<!-- Include Bootstrap Icons CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
 <div class="container mt-4">
     <h2 class="text-center mb-4">Reports</h2>
 
+    <!-- Filter Section -->
+    <div class="card p-3 mb-4">
+        @using (Html.BeginForm("Index", "Report", FormMethod.Get))
+        {
+            <div class="row mb-3 align-items-end">
+                <!-- Search Input -->
+                <div class="col-md-4 mb-2">
+                    <div class="input-group">
+                        @Html.TextBox("searchString", ViewBag.CurrentFilter as string, new { @class = "form-control", placeholder = "Search Reports..." })
+                        <button class="btn btn-outline-secondary" type="submit">Search</button>
+                    </div>
+                </div>
+
+                <!-- Date Filters and Buttons -->
+                <div class="col-md-8">
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <label for="startDate" class="form-label">Start Date:</label>
+                            @Html.TextBox("startDate", ViewBag.StartDate as string, new { @class = "form-control", @type = "date" })
+                        </div>
+                        <div class="col-md-3">
+                            <label for="endDate" class="form-label">End Date:</label>
+                            @Html.TextBox("endDate", ViewBag.EndDate as string, new { @class = "form-control", @type = "date" })
+                        </div>
+                        <!-- Filter Button -->
+                        <div class="col-md-2 d-flex align-items-end">
+                            <div class="dropdown w-100">
+                                <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Filter
+                                </button>
+                                <ul class="dropdown-menu w-100">
+                                    <li><button class="dropdown-item" type="button" onclick="setThisWeek()">This Week</button></li>
+                                    <li><button class="dropdown-item" type="button" onclick="setThisMonth()">This Month</button></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- Print Button next to Filter -->
+                        <div class="col-md-2 d-flex align-items-end">
+                            <a href="@Url.Action("ExportAllToWord", "Report", new { searchString = ViewBag.CurrentFilter, startDate = ViewBag.StartDate, endDate = ViewBag.EndDate, reportType = ViewBag.ReportType })"
+                               class="btn btn-primary w-100">
+                                <i class="bi bi-file-earmark-word me-1"></i> Print
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Reports Table -->
     <div class="table-responsive">
         <table class="table table-hover table-striped align-middle table-custom">
             <thead>
@@ -59,6 +67,7 @@
                     <th scope="col">Type</th>
                     <th scope="col">Sender</th>
                     <th scope="col">Receiver</th>
+                    <th scope="col">Status</th>
                     <th scope="col">Created Date</th>
                     <th scope="col">Actions</th>
                 </tr>
@@ -71,10 +80,10 @@
                         <td>@item.TypeOfDoc</td>
                         <td>@item.SenderName</td>
                         <td>@item.ReceiverName</td>
+                        <td><span class="badge bg-primary">@item.DocStatus</span></td>
                         <td>@item.CreatedDate.ToString("MM/dd/yyyy h:mm tt")</td>
                         <td>
-                            <a href="/Report/Details/@item.Id" class="btn btn-info btn-sm">View Details</a>
-                            <a href="/Report/ExportDetails/@item.Id" class="btn btn-primary btn-sm">Export</a>
+                            @Html.ActionLink("Export to Word", "ExportDetailsToWord", "Report", new { id = item.Id }, new { @class = "btn btn-outline-primary btn-sm" })
                         </td>
                     </tr>
                 }
@@ -82,3 +91,106 @@
         </table>
     </div>
 </div>
+
+<script>
+    function setToday() {
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelector('input[name="startDate"]').value = today;
+        document.querySelector('input[name="endDate"]').value = today;
+        document.querySelector('form').submit(); // Automatically submit the form
+    }
+
+    function setThisWeek() {
+        const today = new Date();
+        const dayOfWeek = today.getDay(); // 0 (Sun) - 6 (Sat)
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - dayOfWeek + 1); // Monday of the current week
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+        document.querySelector('input[name="startDate"]').value = startOfWeek.toISOString().split('T')[0];
+        document.querySelector('input[name="endDate"]').value = endOfWeek.toISOString().split('T')[0];
+        document.querySelector('form').submit(); // Automatically submit the form
+    }
+
+    function setThisMonth() {
+        const today = new Date();
+        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+        document.querySelector('input[name="startDate"]').value = startOfMonth.toISOString().split('T')[0];
+        document.querySelector('input[name="endDate"]').value = endOfMonth.toISOString().split('T')[0];
+        document.querySelector('form').submit(); // Automatically submit the form
+    }
+</script>
+
+<style>
+    .form-control, .btn, .dropdown-toggle {
+        height: 38px;
+    }
+
+    /* Align labels and inputs */
+    .form-label {
+        display: block;
+    }
+
+    /* Adjust the input group to align with other inputs */
+    .input-group {
+        height: 38px;
+    }
+
+        .input-group .form-control {
+            height: 100%;
+        }
+
+        .input-group .btn {
+            height: 100%;
+        }
+
+    /* Adjust dropdown menu width */
+    .dropdown-menu {
+        min-width: 100%;
+    }
+
+    /* Table styling */
+    .table-custom thead {
+        background-color: #9e9edc; /* Soft muted violet for the table headers */
+        color: white;
+    }
+
+    .table-custom tbody tr:nth-child(odd) {
+        background-color: #f9f9fc; /* Very light greyish blue for odd rows */
+    }
+
+    .table-custom tbody tr:nth-child(even) {
+        background-color: #ffffff; /* White for even rows */
+    }
+
+    /* Button styling */
+    .btn-primary {
+        background-color: #5b77d0;
+        border-color: #5b77d0;
+    }
+
+        .btn-primary:hover {
+            background-color: #4a66ba;
+            border-color: #4a66ba;
+        }
+
+    /* Card styling */
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    /* Prevent button text from wrapping */
+    .btn {
+        white-space: nowrap;
+    }
+
+    /* Align the "Print" button with the Filter button */
+    .align-actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+</style>

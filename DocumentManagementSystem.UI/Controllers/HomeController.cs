@@ -34,7 +34,7 @@ namespace DocumentManagementSystem.UI.Controllers
         private readonly DocumentContext _context;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
- 
+
 
 
 
@@ -178,7 +178,7 @@ namespace DocumentManagementSystem.UI.Controllers
             return View("Index", dtos);
         }
 
- 
+
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -306,7 +306,7 @@ namespace DocumentManagementSystem.UI.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(DocumentUpdateDto dto, IFormFile uploadedFile)
         {
-            if (dto.DocStatus == DocStatus.Delivered)
+            if (dto.DocStatus == DocStatus.Done)
             {
                 dto.ReceiveDate = DateTime.Now;
             }
@@ -335,9 +335,80 @@ namespace DocumentManagementSystem.UI.Controllers
             return this.ResponseRedirectAction(response, "Index");
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Remarks(int id)
+        {
+            var response = await _documentService.GetByIdAsync<DocumentRemarksDto>(id);
+            if (response.ResponseType != ResponseType.Success || response.Data == null)
+            {
+                return NotFound();
+            }
+
+            var departments = _context.Departments.Select(d => new { d.Id, d.Definition }).ToList();
+            ViewBag.Departments = new SelectList(departments, "Id", "Definition");
+
+            var docStatusList = Enum.GetValues(typeof(DocStatus))
+                .Cast<DocStatus>()
+                .Select(d => new SelectListItem
+                {
+                    Value = ((int)d).ToString(),
+                    Text = d.ToString()
+                }).ToList();
+
+            ViewBag.DocStatusList = new SelectList(docStatusList, "Value", "Text", response.Data.DocStatus);
+
+            return View("Remarks", response.Data);
+        }
 
 
-        public async Task<IActionResult> Detail(int id)
+        [HttpPost]
+        public async Task<IActionResult> Remarks(DocumentRemarksDto dto, IFormFile uploadedFile)
+        {
+            // Retrieve existing document
+            var existingDocumentResponse = await _documentService.GetByIdAsync<DocumentUpdateDto>(dto.Id);
+
+            if (existingDocumentResponse.ResponseType != ResponseType.Success || existingDocumentResponse.Data == null)
+            {
+                // Handle not found
+                return NotFound();
+            }
+
+            var existingDocument = existingDocumentResponse.Data;
+
+            // Update only the fields that are allowed to be edited
+            existingDocument.Description = dto.Description;
+            existingDocument.DocStatus = dto.DocStatus;
+            existingDocument.DepId = dto.DepId;
+
+            if (dto.DocStatus == DocStatus.Done)
+            {
+                existingDocument.ReceiveDate = DateTime.Now;
+            }
+
+            // Handle the uploaded file if it exists.
+            if (uploadedFile != null && uploadedFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "fileUpload");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + uploadedFile.FileName;
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await uploadedFile.CopyToAsync(fileStream);
+                }
+
+                existingDocument.FileName = uploadedFile.FileName;
+                existingDocument.FilePath = $"/fileUpload/{uniqueFileName}";
+            }
+
+            var response = await _documentService.UpdateAsync(existingDocument);
+
+            return this.ResponseRedirectAction(response, "Index");
+        }
+
+    public async Task<IActionResult> Detail(int id)
         {
             var documentResponse = await _documentService.GetByIdAsync<DocumentUpdateDto>(id);
 
@@ -347,12 +418,12 @@ namespace DocumentManagementSystem.UI.Controllers
             }
 
             var departmentDefinition = await _context.Departments
-                .Where(d => d.Id == documentResponse.Data.DepId)  
+                .Where(d => d.Id == documentResponse.Data.DepId)
                 .Select(d => d.Definition)
                 .FirstOrDefaultAsync();
 
             documentResponse.Data.DepartmentDefinition = departmentDefinition;
-            return this.ResponseView(documentResponse); 
+            return this.ResponseView(documentResponse);
         }
 
 

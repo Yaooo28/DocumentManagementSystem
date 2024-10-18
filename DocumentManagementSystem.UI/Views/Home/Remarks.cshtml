@@ -1,0 +1,115 @@
+﻿@using DocumentManagementSystem.Entities
+@model DocumentRemarksDto
+@{
+    Layout = "_Layout";
+}
+
+<div class="row">
+    <div class="col-xl">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Add Remarks to @Model.Title Document</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" asp-action="Remarks" asp-controller="Home">
+                    <input type="hidden" asp-for="Id" />
+
+                    <!-- Description Field -->
+                    <div class="mb-3">
+                        <label class="form-label" for="Description">Remarks</label>
+                        <textarea asp-for="Description" class="form-control" placeholder="Describe the document content"></textarea>
+                        <span class="text-danger" asp-validation-for="Description"></span>
+                    </div>
+
+                    <!-- Document Status Field -->
+                    <div class="mb-3">
+                        <label class="form-label" for="DocStatus">Document Status</label>
+                        <select asp-for="DocStatus" class="form-control" asp-items="ViewBag.DocStatusList"></select>
+                        <span class="text-danger" asp-validation-for="DocStatus"></span>
+                    </div>
+
+                    <!-- Department Selection -->
+                    <div class="mb-3">
+                        <label for="DepId" class="form-label">Department</label>
+                        <select class="form-control" asp-for="DepId" asp-items="ViewBag.Departments">
+                            <option value="">Select a Department</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="DepId"></span>
+                    </div>
+
+                    <!-- File Upload Field -->
+                    <div class="mb-3">
+                        <label class="form-label" for="uploadedFile">Upload File</label>
+                        <input type="file" id="fileInput" name="uploadedFile" style="display: none;" />
+                        <div class="file-display" onclick="document.getElementById('fileInput').click();">
+                            <span id="fileName">
+                                @if (!string.IsNullOrEmpty(Model.FileName))
+
+                                {
+                                    <text>@Model.FileName</text>
+                                }
+
+                                else
+
+                                {
+                                    <text>Click to upload a file</text>
+                                }
+                            </span>
+                            <span id="removeFile" style="display: @(string.IsNullOrEmpty(Model.FileName) ? "none" : "inline");" onclick="removeFile(event)">&#x274C;</span>
+                        </div>
+                        <input type="hidden" asp-for="FileName" />
+                    </div>
+
+                    <div class="text-danger" asp-validation-summary="All"></div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const fileNameSpan = document.getElementById('fileName');
+    const removeFileSpan = document.getElementById('removeFile');
+
+    fileInput.addEventListener('change', function () {
+        if (fileInput.files.length > 0) {
+            fileNameSpan.textContent = fileInput.files[0].name;
+            removeFileSpan.style.display = 'inline';
+        }
+    });
+
+    function removeFile(event) {
+        event.stopPropagation(); // Prevent the file dialog from reopening
+        fileInput.value = ''; // Clear the file input
+        fileNameSpan.textContent = 'Click to upload a file';
+        removeFileSpan.style.display = 'none';
+    }
+</script>
+
+<style>
+    .file-display {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 10px;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f9f9f9;
+        cursor: pointer;
+    }
+
+    #removeFile {
+        margin-left: 10px;
+        cursor: pointer;
+        color: #888;
+    }
+
+    #fileName {
+        flex-grow: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>

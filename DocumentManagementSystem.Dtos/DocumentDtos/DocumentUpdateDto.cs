@@ -28,5 +28,6 @@ namespace DocumentManagementSystem.Dtos
         public string DepartmentDefinition { get; set; }
         public string FileName { get; set; } // Current file name
         public string FilePath { get; set; } // Path to the current file
+        public string Remarks { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.FileIO;
+using System;
 
 namespace DocumentManagementSystem.Entities
 {
@@ -11,7 +12,7 @@ namespace DocumentManagementSystem.Entities
         public string SenderName { get; set; }
         public string ReceiverName { get; set; }
         public DocState DocState { get; set; }
-        public DocStatus DocStatus { get; set; } = DocStatus.Sent;
+        public DocStatus DocStatus { get; set; } = DocStatus.Submitted;
         public int ReplyDocId { get; set; }
         public DateTime SendDate { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
@@ -34,7 +35,11 @@ namespace DocumentManagementSystem.Entities
     }
     public enum DocStatus
     {
-        Sent,
-        Delivered
+        Submitted,
+        Ongoing,
+        Recieved,
+        Forwarded,
+        Done
     }
+
 }
