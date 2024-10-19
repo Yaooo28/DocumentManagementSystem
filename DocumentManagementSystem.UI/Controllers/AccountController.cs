@@ -37,8 +37,8 @@ namespace DocumentManagementSystem.UI.Controllers
             IAppUserService appUserService,
             IMapper mapper,
             DocumentContext context,
-            IAnnouncementService announcementService) // Pass IAnnouncementService here
-            : base(announcementService) // Pass the service to the base controller
+            IAnnouncementService announcementService)
+            : base(announcementService)
         {
             _hostingEnvironment = hostingEnvironment;
             _deparmentService = deparmentService;
@@ -57,6 +57,7 @@ namespace DocumentManagementSystem.UI.Controllers
             };
             return View(model);
         }
+
         [HttpPost]
         public async Task<IActionResult> SignUp(UserCreateModel model)
         {
@@ -66,12 +67,10 @@ namespace DocumentManagementSystem.UI.Controllers
                 var dto = _mapper.Map<AppUserCreateDto>(model);
                 var createResponse = await _appUserService.CreateWithRoleAsync(dto, (int)RoleType.Member);
                 return this.ResponseRedirectAction(createResponse, "SignIn");
-
             }
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
-
             }
             var response = await _deparmentService.GetAllAsync();
             model.Departments = new SelectList(response.Data, "Id", "Definition", model.DeparmentId);
@@ -82,6 +81,7 @@ namespace DocumentManagementSystem.UI.Controllers
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> SignIn(AppUserLoginDto dto)
         {
@@ -137,13 +137,13 @@ namespace DocumentManagementSystem.UI.Controllers
                 var model = _mapper.Map<UserUpdateModel>(userDto);
 
                 // Make sure to set ImagePath from the user's database record
-                model.ImagePath = user.ImagePath; // The ImagePath should be coming from your database (something like "images/example.jpg")
+                model.ImagePath = user.ImagePath;
 
                 // Load departments (for dropdown)
                 var response = await _deparmentService.GetAllAsync();
-                model.Departments = new SelectList(response.Data, "Id", "Definition");
+                model.Departments = new SelectList(response.Data, "Id", "Definition", model.DeparmentId);
 
-                return View(model); // Pass the updated model with ImagePath to the view
+                return View(model);
             }
             return View();
         }
@@ -153,60 +153,70 @@ namespace DocumentManagementSystem.UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (profileImage != null && profileImage.Length > 0)
+                // Fetch the user from the database by their ID
+                var user = _context.AppUsers.FirstOrDefault(x => x.Id == model.Id);
+
+                if (user != null)
                 {
-                    // Get the file name
-                    var fileName = Path.GetFileName(profileImage.FileName);
+                    // Update user properties
+                    user.Username = model.Username;
+                    user.Password = model.Password;
+                    user.FirstName = model.FirstName;
+                    user.LastName = model.LastName;
+                    user.Email = model.Email;
+                    user.PhoneNumber = model.PhoneNumber;
+                    user.DeparmentId = model.DeparmentId;
 
-                    // Set the path to save the file in the wwwroot/images folder
-                    var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "images");
-                    var filePath = Path.Combine(uploadsFolder, fileName);
-
-                    // Save the file to the wwwroot/images folder
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    if (profileImage != null && profileImage.Length > 0)
                     {
-                        await profileImage.CopyToAsync(fileStream);
+                        // Get the file name
+                        var fileName = Path.GetFileName(profileImage.FileName);
+
+                        // Generate a unique file name to avoid collisions
+                        var uniqueFileName = Guid.NewGuid().ToString() + "_" + fileName;
+
+                        // Set the path to save the file in the wwwroot/images folder
+                        var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "images");
+                        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                        // Save the file to the wwwroot/images folder
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await profileImage.CopyToAsync(fileStream);
+                        }
+
+                        // Optionally, delete the old image file
+                        if (!string.IsNullOrEmpty(user.ImagePath))
+                        {
+                            var oldImagePath = Path.Combine(_hostingEnvironment.WebRootPath, user.ImagePath);
+                            if (System.IO.File.Exists(oldImagePath))
+                            {
+                                System.IO.File.Delete(oldImagePath);
+                            }
+                        }
+
+                        // Set the relative image path
+                        user.ImagePath = "images/" + uniqueFileName;
+                    }
+                    else
+                    {
+                        // No new image uploaded; retain the existing ImagePath
+                        user.ImagePath = model.ImagePath;
                     }
 
-                    // Log the file path for debugging
-                    Console.WriteLine("File saved to: " + filePath);
+                    // Save changes to the database
+                    _context.AppUsers.Update(user);
+                    await _context.SaveChangesAsync();
 
-                    // Set the relative image path
-                    model.ImagePath = "images/" + fileName;
-
-                    // Save the image path to the database
-                    await UpdateUserAndImagePath(model);
-
-                    // After uploading, you should redirect to refresh the page so that the image gets displayed
                     return RedirectToAction("Detail");
                 }
             }
 
             // Reload departments in case of invalid submission
             var response = await _deparmentService.GetAllAsync();
-            model.Departments = new SelectList(response.Data, "Id", "Definition");
+            model.Departments = new SelectList(response.Data, "Id", "Definition", model.DeparmentId);
 
             return View(model);
         }
-
-        private async Task UpdateUserAndImagePath(UserUpdateModel model)
-        {
-            // Fetch the user from the database by their ID
-            var user = _context.AppUsers.FirstOrDefault(x => x.Id == model.Id);
-
-            if (user != null)
-            {
-                // Update the user's ImagePath
-                user.ImagePath = model.ImagePath;
-
-                // Save changes to the database
-                _context.AppUsers.Update(user);
-                await _context.SaveChangesAsync();
-            }
-        }
-
-
-
-
     }
 }

@@ -19,10 +19,24 @@
                 </thead>
                 <tbody class="table-border-bottom-0">
                     @foreach (var announcement in Model)
+
                     {
                         <tr>
                             <td><strong>@announcement.Title</strong></td>
-                            <td>@announcement.Content</td>
+                            <td>
+                                @if (announcement.Content.Length > 100)
+
+                                {
+                                    @($"{announcement.Content.Substring(0, 100)}...")
+                                }
+
+                                else
+
+                                {
+                                    @announcement.Content
+                                }
+                            </td>
+
                             <td>@announcement.DateCreated.ToShortDateString()</td>
                             <td>
                                 <a class="btn btn-info" asp-action="Edit" asp-route-id="@announcement.Id">Edit</a>

@@ -59,14 +59,11 @@ namespace DocumentManagementSystem.UI.Controllers
 
         public async Task<IActionResult> Index([FromQuery] string search, [FromQuery] string searchopt, [FromQuery] string sortOption)
         {
-            // Retrieve the roles of the current user
+            // Retrieve user roles
             var userRoles = User.FindAll(ClaimTypes.Role).Select(r => r.Value).ToList();
 
-            // Retrieve the current user's DeparmentId (you can fetch this from the claims or from the database)
-            // Assuming DepartmentId is stored in the user's claims
+            // Retrieve user's department ID
             int? userDepartmentId = null;
-
-            // Example: If DepartmentId is stored as a claim
             var departmentClaim = User.FindFirst("DeparmentId");
             if (departmentClaim != null)
             {
@@ -74,11 +71,9 @@ namespace DocumentManagementSystem.UI.Controllers
             }
             else
             {
-                // Fetch user data from IAppUserService instead of identityContext or DocumentContext
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Assuming the user ID is in the claims
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    // Use IAppUserService to get the user's DepartmentId
                     var userResponse = await _appUserService.GetUserByIdAsync(int.Parse(userId));
                     if (userResponse.ResponseType == ResponseType.Success && userResponse.Data != null)
                     {
@@ -87,16 +82,16 @@ namespace DocumentManagementSystem.UI.Controllers
                 }
             }
 
-            // If DeparmentId is still null, return a BadRequest
             if (!userDepartmentId.HasValue)
             {
                 return BadRequest("Department information not found for the current user.");
             }
 
-            // Load announcements
+            // Load announcements and set to ViewData
             var announcements = await _announcementService.GetAllAsync();
             ViewData["Announcements"] = announcements;
 
+            // Load documents (same as before)
             var docsQuery = from doc in _context.Documents
                             join dep in _context.Departments on doc.DepId equals dep.Id
                             select new
@@ -114,43 +109,34 @@ namespace DocumentManagementSystem.UI.Controllers
                                 doc.DepId
                             };
 
-            // If the user is NOT an Admin or Moderator, apply the Department filter
+            // Department filter for non-admin users
             if (!userRoles.Contains("Admin") && !userRoles.Contains("Moderator"))
             {
                 docsQuery = docsQuery.Where(x => x.DepId == userDepartmentId.Value);
             }
 
-            // Filter by search option
-            if (!String.IsNullOrEmpty(search))
+            // Apply search and sort options (same as before)
+            if (!string.IsNullOrEmpty(search))
             {
                 if (!int.TryParse(searchopt, out int selectedOpt))
                 {
-                    selectedOpt = 0; // Default to searching by Title
+                    selectedOpt = 0; // Default to Title search
                 }
 
-                search = search.ToLower(); // Convert the search term to lowercase
-
+                search = search.ToLower();
                 docsQuery = selectedOpt switch
                 {
-                    // Sender
                     1 => docsQuery.Where(x => x.SenderName != null && x.SenderName.ToLower().Contains(search)),
-                    // Receiver
                     2 => docsQuery.Where(x => x.ReceiverName != null && x.ReceiverName.ToLower().Contains(search)),
-                    // Type of Doc
                     3 => docsQuery.Where(x => x.TypeOfDoc != null && x.TypeOfDoc.ToLower().Contains(search)),
-                    // Class of Doc
                     4 => docsQuery.Where(x => x.ClassOfDoc != null && x.ClassOfDoc.ToLower().Contains(search)),
-                    // Department
                     5 => docsQuery.Where(x => x.DepartmentDefinition != null && x.DepartmentDefinition.ToLower().Contains(search)),
-                    // State
                     6 => docsQuery.Where(x => x.DocState.ToString().ToLower().Contains(search)),
-                    // Title
                     _ => docsQuery.Where(x => x.Title != null && x.Title.ToLower().Contains(search)),
                 };
             }
 
-
-            // Sort the results
+            // Sort documents
             docsQuery = sortOption switch
             {
                 "title" => docsQuery.OrderBy(x => x.Title),
@@ -160,6 +146,7 @@ namespace DocumentManagementSystem.UI.Controllers
                 "senddate" => docsQuery.OrderByDescending(x => x.SendDate),
                 _ => docsQuery.OrderBy(x => x.Id),
             };
+
             var docs = await docsQuery.ToListAsync();
             var dtos = docs.Select(x => new DocumentListDto
             {
@@ -180,16 +167,19 @@ namespace DocumentManagementSystem.UI.Controllers
 
 
         [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _documentService.RemoveAsync(id);
             if (result.ResponseType == Common.ResponseType.Success)
             {
-                return this.ResponseRedirectAction(result, "Index");
+                return RedirectToAction("Index");
             }
             else
             {
-                return View("Index");
+                TempData["ErrorMessage"] = "An error occurred while deleting the document.";
+                return RedirectToAction("Index");
             }
         }
         public IActionResult Create()
